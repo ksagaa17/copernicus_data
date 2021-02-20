@@ -1,3 +1,9 @@
+"""
+This script contains spiders for collecting the urls for the datasets. When a spider is used, an .json file 
+is returned with the urls for the datasets at the given webpage.
+
+"""
+
 import scrapy
 from logzero import logfile, logger
 from selenium import webdriver
@@ -13,6 +19,8 @@ import time
 
 class CDSUrlsSpiderSpider(scrapy.Spider):
     """
+    Collects dataset urls from https://cds.climate.copernicus.eu/cdsapp#!/search?type=dataset.
+    
     Run this spider with: /main/copernicus_scrape$ scrapy crawl CDS_dataset_urls_spider -o CDS_dataset_urls.json
     """
     # Initializing log file
@@ -66,6 +74,7 @@ class CDSUrlsSpiderSpider(scrapy.Spider):
         
 class ADSUrlsSpiderSpider(scrapy.Spider):
     """
+    Collects dataset urls from https://ads.atmosphere.copernicus.eu/cdsapp#!/search?type=dataset
     Run this spider with: /main/copernicus_scrape$ scrapy crawl ADS_dataset_urls_spider -o ADS_dataset_urls.json
     """
     # Initializing log file
