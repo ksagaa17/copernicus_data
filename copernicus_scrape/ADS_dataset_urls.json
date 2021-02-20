@@ -1,0 +1,10 @@
+[
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-reanalysis-eac4-monthly"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-emission-inventories"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-radiative-forcings"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-radiative-forcing-auxilliary-variables"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-reanalysis-eac4"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-solar-radiation-timeseries"},
+{"url": "https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-europe-air-quality-forecasts"}
+]
