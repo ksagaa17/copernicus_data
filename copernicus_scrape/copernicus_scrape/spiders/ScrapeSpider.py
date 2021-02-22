@@ -43,25 +43,32 @@ class ScrapeSpider(scrapy.Spider):
         # Implicit wait gives the DOM time to load
         driver.implicitly_wait(10) 
         
+        # Explicit wait does not proceed until a condition is fulfilled
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "page-header")))
+        
         # Title
-        # header = driver.find.element_by_class_name("page-header").get_attribute("innerText")
-        # yield {
-        #     "title": header
-        #     }
-        # # Explicit wait does not proceed until a condition is fulfilled
-        # wait = WebDriverWait(driver, 5)
-        # wait.until(EC.presence_of_element_located((By.CLASS_NAME, "abstract-text")))
+        header = driver.find_elements_by_class_name("page-header")
+        
+        for head in header:    
+            text = head.get_attribute("innerText")
+            yield {
+                "title": text
+                }
+        # Explicit wait does not proceed until a condition is fulfilled
+        wait = WebDriverWait(driver, 5)
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "abstract-text")))
         
         # # Description
-        # descriptions = driver.find.element_by_class_name("abstract-text")
-        # description_count = 0
+        descriptions = driver.find_elements_by_class_name("abstract-text")
+        description_count = 0
         
-        # for description in descriptions:
-        #     intermediate = description.get_attribute("innerText")
-        #     yield {
-        #         "description": intermediate,
-        #     }
-        #     description_count += 1
+        for description in descriptions:
+            intermediate = description.get_attribute("innerText")
+            yield {
+                "description": intermediate,
+            }
+            description_count += 1
         
     
         # Explicit wait does not proceed until a condition is fulfilled
@@ -81,7 +88,7 @@ class ScrapeSpider(scrapy.Spider):
             parameter_count += 1
         
         
-        #logger.info("{} Total number of parameters and {} Total number of descriptions".format(parameter_count, description_count))
+        logger.info("{} Total number of parameters and {} Total number of descriptions".format(parameter_count, description_count))
         driver.quit()
         
     
