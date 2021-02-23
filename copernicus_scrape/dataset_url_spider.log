@@ -1,2 +1,10 @@
 [I 210220 11:29:32 dataset_url_spider:61] Total number of dataset URLs: 96 on https://cds.climate.copernicus.eu/cdsapp#!/search?type=dataset
 [I 210220 11:34:38 dataset_url_spider:116] Total number of dataset URLs: 8 on https://ads.atmosphere.copernicus.eu/cdsapp#!/search?type=dataset
+[I 210222 15:34:33 ScrapeSpider:96] 82 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:08:37 DataSpider_skeleton:105] 82 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:08 DataSpider_skeleton:105] 82 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:09 DataSpider_skeleton:105] 20 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:10 DataSpider_skeleton:105] 102 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:10 DataSpider_skeleton:105] 7 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:11 DataSpider_skeleton:105] 4 Total number of parameters and 1 Total number of descriptions
+[I 210223 17:12:13 DataSpider_skeleton:105] 156 Total number of parameters and 1 Total number of descriptions
