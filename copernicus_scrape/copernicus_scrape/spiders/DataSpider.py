@@ -21,8 +21,8 @@ class DataSpider(scrapy.Spider):
     Run this spider with: /main/copernicus_scrape$ scrapy crawl ScrapeSpider -o ScrapeSpider.json 
     """
     # Initializing log file
-    logfile("ScrapeSpider.log", maxBytes=1e6, backupCount=3)
-    name = "ScrapeSpider2"
+    logfile("DataScrapeSpider.log", maxBytes=1e6, backupCount=3)
+    name = "DataScrapeSpider"
     allowed_domains = ["toscrape.com"]
 
     # Using a dummy website to start scrapy request
@@ -32,15 +32,15 @@ class DataSpider(scrapy.Spider):
 
     def parse_urls(self, response):
         #Use headless option to not open a new browser window
-        options = webdriver.FirefoxOptions()
-        options.add_argument("headless")
-        desired_capabilities = options.to_capabilities()
-        driver = webdriver.Firefox(desired_capabilities=desired_capabilities)
-        
-        # options = webdriver.ChromeOptions()
+        # options = webdriver.FirefoxOptions()
         # options.add_argument("headless")
         # desired_capabilities = options.to_capabilities()
-        # driver = webdriver.Chrome(desired_capabilities=desired_capabilities)
+        # driver = webdriver.Firefox(desired_capabilities=desired_capabilities)
+        
+        options = webdriver.ChromeOptions()
+        options.add_argument("headless")
+        desired_capabilities = options.to_capabilities()
+        driver = webdriver.Chrome(desired_capabilities=desired_capabilities)
         
         
         with open("ADS_dataset_urls.json", "r") as f:
@@ -84,8 +84,8 @@ class DataSpider(scrapy.Spider):
         
     
             # Explicit wait does not proceed until a condition is fulfilled
-            wait = WebDriverWait(driver, 5)
-            wait.until(EC.presence_of_element_located((By.CLASS_NAME, "variables-name")))
+            # wait = WebDriverWait(driver, 5)
+            # wait.until(EC.presence_of_element_located((By.CLASS_NAME, "variables-name")))
         
         
             # Parameters
@@ -94,9 +94,10 @@ class DataSpider(scrapy.Spider):
             tmp2 = []
         
             for parameter in parameters:
-                tmp2.append(parameter.get_attribute("innerText"))
-                parameter_count += 1
-        
+                if parameter.get_attribute("innerText") != "Name":
+                    tmp2.append(parameter.get_attribute("innerText"))
+                    parameter_count += 1
+                
             yield {
                 "Webpage": url,
                 "Title": text,
