@@ -49,12 +49,12 @@ class ScrapeSpider(scrapy.Spider):
         
         # Title
         header = driver.find_elements_by_class_name("page-header")
-        
-        for head in header:    
-            text = head.get_attribute("innerText")
-            yield {
-                "title": text
-                }
+        text = header[0].get_attribute("innerText")
+        # for head in header:    
+        #     text = head.get_attribute("innerText")
+        #     yield {
+        #         "title": text
+        #         }
         # Explicit wait does not proceed until a condition is fulfilled
         wait = WebDriverWait(driver, 5)
         wait.until(EC.presence_of_element_located((By.CLASS_NAME, "abstract-text")))
@@ -62,12 +62,10 @@ class ScrapeSpider(scrapy.Spider):
         # # Description
         descriptions = driver.find_elements_by_class_name("abstract-text")
         description_count = 0
+        tmp1 = []
         
         for description in descriptions:
-            intermediate = description.get_attribute("innerText")
-            yield {
-                "description": intermediate,
-            }
+            tmp1.append(description.get_attribute("innerText"))
             description_count += 1
         
     
@@ -79,14 +77,17 @@ class ScrapeSpider(scrapy.Spider):
         # Parameters
         parameters = driver.find_elements_by_class_name("variables-name")
         parameter_count = 0
+        tmp2 = []
         
         for parameter in parameters:
-            dummy = parameter.get_attribute("innerText")
-            yield {
-                "parameter": dummy,
-            }
+            tmp2.append(parameter.get_attribute("innerText"))
             parameter_count += 1
         
+        yield {
+            "Title": text,
+            "Description": tmp1,
+            "Parameters": tmp2
+            }
         
         logger.info("{} Total number of parameters and {} Total number of descriptions".format(parameter_count, description_count))
         driver.quit()
