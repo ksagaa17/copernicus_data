@@ -10,4 +10,5 @@ logzero 1.6.3
 
 
 git remote add origin https://github.com/ksagaa17/copernicus_data.git
+
 pull with git pull origin main
