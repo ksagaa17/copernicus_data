@@ -7,3 +7,7 @@ Dependencies:
 scrapy 2.4.1  
 selenium 3.141.0  
 logzero 1.6.3  
+
+
+git remote add origin https://github.com/ksagaa17/copernicus_data.git
+pull with git pull origin main
