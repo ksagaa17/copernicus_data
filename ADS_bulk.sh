@@ -18,6 +18,4 @@ with open('$JSON_FILE_IN') as json_in:
 
 python3 -c "$PYTHON"
 
-echo "nu"
-
-curl -s -XPOST $ES_HOST/copernicus3/_bulk -H 'Content-Type: application/json' --data-binary @$JSON_FILE_OUT
+curl -s -XPOST $ES_HOST/copernicus4/_bulk -H 'Content-Type: application/json' --data-binary @$JSON_FILE_OUT
