@@ -94,7 +94,7 @@ for i in range(N):
     tmp = json.dumps(text[i])
     text_string.append(tmp)
 
-# nltk.download() # run to download nltk dependencies
+# nltk.download() # run to download nltk dependencies.
 
 # Tokenisation
 tokens = Tokenize(text_string[0])    
