@@ -7,6 +7,7 @@ used as preprocessing for the clustering process.
 import nltk
 import re
 import json
+import numpy as np
 
 
 def Tokenize(text):
@@ -83,6 +84,56 @@ def remove_stops(stems, stopwords, amount = 179):
     filtered_sentence = [w for w in stems if not w in stopwords[:amount]] 
     return filtered_sentence
 
+
+def jaccard_distance(list1, list2):
+    """
+    Computes the jaccard distance between to lists. The lists
+    are converted to sets, i.e., order and duplicates in the lists are
+    removed.
+
+    Parameters
+    ----------
+    list1 : list
+        The first list.
+    list2 : list
+        The second list.
+
+    Returns
+    -------
+    TYPE float
+        The jaccard distance.
+
+    """
+    set1 = set(list1)
+    set2 = set(list2)
+    cap = len(set1.intersection(set2))
+    return 1 - cap/(len(set1) + len(set2) - cap)
+
+def jaccard_matrix(documents):
+    """
+    Computes the jaccard distance between all input documents. 
+
+    Parameters
+    ----------
+    documents : list of lists.
+        The documents for which the jaccard distance should be calculated. 
+        Let the number of documents be N.
+
+    Returns
+    -------
+    jac_mat : ndarray, size (N,N,)
+        Symmetric matrix. Index i,j contains the jaccard distance between 
+        documents i and j.
+
+    """
+    N = len(documents)
+    jac_mat = np.zeros((N,N))
+    for i in range(N-1):
+        for j in range(i+1,N):
+            jac_mat[i,j] = jaccard_distance(documents[i], documents[j])
+            jac_mat[j,i] = jac_mat[i,j]
+            
+    return jac_mat
 
 #%% #Testing the modules
 with open('copernicus_scrape/ADS_data.json') as f:
