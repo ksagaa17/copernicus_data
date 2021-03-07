@@ -11,6 +11,8 @@ doc1 = ['my', 'name', 'is', 'johannes']
 doc2 = ['my', 'name', 'is', 'ulla']
 doc3 = ['johannes', 'is', 'my', 'name']
 doc4 = ['my', 'name', 'is', 'johannes', 'is', 'my', 'eeh']
+doc5 = ['der', 'var', 'engang', 'hejsa', 'is', 'ulla']
+doc6 = ['say', 'my', 'name', 'you', 'are', 'ulla']
 # doc4 = doc1
 
 # print('average: micro')
@@ -89,11 +91,30 @@ def jaccard_matrix(documents):
             
     return jac_mat
 
+def jaccard_matrix_update(old_matrix, old_documents, new_documents):
+    M = len(new_documents)
+    N = old_matrix.shape[0]
+    jac_mat = np.zeros((N+M,N+M))
+    jac_mat[:N,:N] = old_matrix
+    print(jac_mat)
+    for i in range(N):
+        for j in range(M):
+            jac_mat[i,N+j] = jaccard_distance(old_documents[i], new_documents[j])
+            print('{},{}'.format(i,j))
+            jac_mat[N+j,i] = jac_mat[i,N+j]
+    
+    print(jac_mat)
+    jac_mat[N:,N:] = jaccard_matrix(new_documents)
+    print(jac_mat)
+    return jac_mat
+
 jac1 = jaccard_distance(doc1, doc1)
 jac2 = jaccard_distance(doc1, doc2)
 jac3 = jaccard_distance(doc1, doc3)
 jac4 = jaccard_distance(doc1, doc4)
 
 mat = jaccard_matrix([doc1, doc2, doc3, doc4])
+
+new_mat = jaccard_matrix_update(mat, [doc1, doc2, doc3, doc4], [doc5, doc6, doc3])
             
             

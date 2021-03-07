@@ -109,6 +109,7 @@ def jaccard_distance(list1, list2):
     cap = len(set1.intersection(set2))
     return 1 - cap/(len(set1) + len(set2) - cap)
 
+
 def jaccard_matrix(documents):
     """
     Computes the jaccard distance between all input documents. 
@@ -135,8 +136,43 @@ def jaccard_matrix(documents):
             
     return jac_mat
 
+
+def jaccard_matrix_update(old_matrix, old_documents, new_documents):
+    """
+    Compute and insert Jaccard distance from new docutments in the Jaccard 
+    matrix.
+
+    Parameters
+    ----------
+    old_matrix : ndarray, size (N,N,)
+        The old Jaccard matrix.
+    old_documents : list of lists
+        The list of documents already represented in the Jaccard matrix.
+        Let the number of documents be N.
+    new_documents : list of lists
+        The new documents for which the jaccard distance should be calculated. 
+        Let the number of documents be M.
+
+    Returns
+    -------
+    jac_mat : ndarray, size (N+M,N+M,)
+        Updated Jaccard matrix.
+
+    """
+    M = len(new_documents)
+    N = old_matrix.shape[0]
+    jac_mat = np.zeros((N+M,N+M))
+    jac_mat[:N,:N] = old_matrix
+    for i in range(N):
+        for j in range(M):
+            jac_mat[i,N+j] = jaccard_distance(old_documents[i], new_documents[j])
+            jac_mat[N+j,i] = jac_mat[i,N+j]
+    
+    jac_mat[N:,N:] = jaccard_matrix(new_documents)
+    return jac_mat
+
 #%% #Testing the modules
-with open('copernicus_scrape/ADS_data.json') as f:
+with open('../copernicus_scrape/CDS_data.json') as f:
   text = json.load(f)
   
 text_string = []
@@ -160,3 +196,10 @@ print(stems) # for instance look at entrace 9, 10, 11 or 12
 stopwords = nltk.corpus.stopwords.words('english')
 no_stops = remove_stops(stems, stopwords, amount = 179) # for instance look at entrace 18 or 19 compared to stems
 print(no_stops)
+
+
+# Compute jaccard matrix
+tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
+stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
+no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
+jaccard_mat = jaccard_matrix(no_stops)
