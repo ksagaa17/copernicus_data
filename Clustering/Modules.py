@@ -205,7 +205,7 @@ def jaccard_matrix_update(old_matrix, old_documents, new_documents):
 
 def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
     """
-    Returns a list of dictionaries containing 10 closest websites in terms 
+    Returns a list of dictionaries containing 'number_of_docs' closest websites in terms 
     of Jaccard distance and the jaccard distance to the docucment specified 
     by doc_num in the list of documents.
 
@@ -217,8 +217,8 @@ def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
         The Jaccard matrix.
     doc_num : int
         The index of the document which we want to find the 10 nearest documents for.
-    number_of_docs: int, default=10
-        The number of nearest docs we want to find. 
+    number_of_docs: int, optional
+        The number of nearest docs we want to find. The default is 10.
         
 
     Returns
@@ -227,6 +227,7 @@ def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
         List of dicts containing the 10 nearest documents and the Jaccard distance.
 
     """
+<<<<<<< Updated upstream
     choose_docs = np.concatenate((jaccard_mat[doc_num,:doc_num], jaccard_mat[doc_num,doc_num+1:]))
     indeces = np.argsort(choose_docs)[:number_of_docs]
     docs = [{"Webpage": documents[indeces[i]].get("Webpage"), "score": jaccard_mat[doc_num, indeces[i]]} for i in range(number_of_docs)]
@@ -270,3 +271,86 @@ def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
 # jaccard_mat = jaccard_matrix(no_stops)
 
 # near = nearest_docs(text, jaccard_mat, 95)
+=======
+    choose_docs = jaccard_mat[doc_num]
+    indeces = np.argsort(choose_docs)[:number_of_docs+1]
+    indeces = indeces[indeces != doc_num]
+    docs = [{"Webpage": documents[indeces[i]].get("Webpage"), 
+             "score": jaccard_mat[doc_num, indeces[i]]} for i in range(number_of_docs)]
+    return docs
+
+
+def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
+    """
+    Returns a list of dictionaries containing closest websites in terms 
+    of Jaccard distance given a threshold for the jaccard distance. 
+    The dictionaries also contains the jaccard distance to the docucment specified 
+    by doc_num in the list of documents.
+
+    Parameters
+    ----------
+    documents : list of dicts
+        List of all the documents in dict format.
+    jaccard_mat : ndarray 
+        The Jaccard matrix.
+    doc_num : int
+        The index of the document which we want to find the 10 nearest documents for.
+    thres : float, optional
+        Float between 0.0 and 1.0. The default is 0.5.
+
+    Returns
+    -------
+    docs : list of dicts
+        List of dicts containing the nearest documents and the Jaccard distance.
+
+    """
+    choose_docs = jaccard_mat[doc_num]
+    indeces = (choose_docs <= thres)
+    indeces = np.arange(len(choose_docs))[indeces]
+    indeces = indeces[indeces != doc_num]
+    docs = [{"Webpage": documents[indeces[i]].get("Webpage"), 
+             "score": jaccard_mat[doc_num, indeces[i]]} for i in range(len(indeces))]
+    return docs
+
+
+#%% #Testing the modules
+if __name__ == "__main__":
+    with open('copernicus_scrape/CDS_data.json') as f:
+      text = json.load(f)
+      
+    text_string = []
+    N = len(text)
+    for i in range(N):
+        tmp = json.dumps(text[i])
+        text_string.append(tmp)
+    
+    # nltk.download() # run to download nltk dependencies.
+    
+    # Tokenisation
+    tokens = Tokenize(text_string[0])    
+    print(tokens)
+    
+    # Stemming
+    stemmer = nltk.stem.snowball.SnowballStemmer("english")
+    stems = Stemming(tokens, stemmer = stemmer)
+    print(stems) # for instance look at entrace 9, 10, 11 or 12
+    
+    # Remove stopwords
+    stopwords = nltk.corpus.stopwords.words('english')
+    no_stops = remove_stops(stems, stopwords, amount = 179) # for instance look at entrace 18 or 19 compared to stems
+    print(no_stops)
+    
+    # Compute jaccard matrix
+    
+    tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
+    stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
+    no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
+    jaccard_mat = jaccard_matrix(no_stops)
+    
+    no_stops = Preprocessing(text_string, stemmer = stemmer, stopwords = stopwords)
+    jaccard_mat = jaccard_matrix(no_stops)
+    
+    near = nearest_docs(text, jaccard_mat, 0, 6)
+    
+    near_thres = nearest_docs_thres(text, jaccard_mat, 0, 0.45)
+>>>>>>> Stashed changes
