@@ -35,8 +35,11 @@ Jaccard_matrix_ADS = M.jaccard_matrix(ADS_string_preprocessed)
 near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 6)
 
 #%% Both
-Combined = ADS
-Combined.update(CDS)
+with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
+    Combined = json.load(f)
+
+with open(pardir+'/copernicus_scrape/CDS_data.json') as g:
+    Combined.append(g)
 
 Combined_string = []
 for i in range(K):
@@ -49,7 +52,4 @@ for i in range(N):
 
 Combined_string_preprocessed = M.Preprocessing(Combined_string)
 Jaccard_matrix_Combined = M.jaccard_matrix(Combined_string_preprocessed) 
-
-
-#near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 6)
-
+near_ADS = M.nearest_docs(Combined, Jaccard_matrix_ADS, 2, 10)
