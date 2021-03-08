@@ -21,7 +21,7 @@ near_CDS = M.nearest_docs(CDS, Jaccard_matrix_CDS, 95, 10)
 #%%ADS
 pardir = os.path.dirname(os.getcwd())
 
-with open(pardir+'copernicus_scrape/ADS_data.json') as f:
+with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
   ADS = json.load(f)
 
 ADS_string = []
@@ -31,4 +31,5 @@ for i in range(K):
 
 ADS_string_preprocessed = M.Preprocessing(ADS_string)
 Jaccard_matrix_ADS = M.jaccard_matrix(ADS_string_preprocessed) 
-near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 2)
+near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 6)
+
