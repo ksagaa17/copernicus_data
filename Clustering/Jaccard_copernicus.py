@@ -27,9 +27,29 @@ with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
 ADS_string = []
 K = len(ADS)
 for i in range(K):
+    tmp = json.dumps(ADS[i])
     ADS_string.append(tmp)
 
 ADS_string_preprocessed = M.Preprocessing(ADS_string)
 Jaccard_matrix_ADS = M.jaccard_matrix(ADS_string_preprocessed) 
 near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 6)
+
+#%% Both
+Combined = ADS
+Combined.update(CDS)
+
+Combined_string = []
+for i in range(K):
+    tmp = json.dumps(ADS[i])
+    Combined_string.append(tmp)
+
+for i in range(N):
+    tmp = json.dumps(CDS[i])
+    Combined_string.append(tmp)
+
+Combined_string_preprocessed = M.Preprocessing(Combined_string)
+Jaccard_matrix_Combined = M.jaccard_matrix(Combined_string_preprocessed) 
+
+
+#near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 6)
 
