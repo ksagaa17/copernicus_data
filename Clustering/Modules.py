@@ -203,7 +203,7 @@ def jaccard_matrix_update(old_matrix, old_documents, new_documents):
     jac_mat[N:,N:] = jaccard_matrix(new_documents)
     return jac_mat
 
-def nearest_10(documents, jaccard_mat, doc_num):
+def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
     """
     Returns a list of dictionaries containing 10 closest websites in terms 
     of Jaccard distance and the jaccard distance to the docucment specified 
@@ -217,6 +217,9 @@ def nearest_10(documents, jaccard_mat, doc_num):
         The Jaccard matrix.
     doc_num : int
         The index of the document which we want to find the 10 nearest documents for.
+    number_of_docs: int, default=10
+        The number of nearest docs we want to find. 
+        
 
     Returns
     -------
@@ -225,8 +228,7 @@ def nearest_10(documents, jaccard_mat, doc_num):
 
     """
     choose_docs = np.concatenate((jaccard_mat[doc_num,:doc_num], jaccard_mat[doc_num,doc_num+1:]))
-    print(choose_docs)
-    indeces = np.argsort(choose_docs)[:10]
+    indeces = np.argsort(choose_docs)[:number_of_docs]
     docs = [{"Webpage": documents[indeces[i]].get("Webpage"), "score": jaccard_mat[doc_num, indeces[i]]} for i in range(10)]
     return docs
 
@@ -264,8 +266,7 @@ stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
 no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
 jaccard_mat = jaccard_matrix(no_stops)
 
-near = nearest_10(text, jaccard_mat, 95)
-
 no_stops = Preprocessing(text_string, stemmer = stemmer, stopwords = stopwords)
 jaccard_mat = jaccard_matrix(no_stops)
 
+near = nearest_docs(text, jaccard_mat, 95)
