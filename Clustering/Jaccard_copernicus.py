@@ -52,4 +52,4 @@ for i in range(N):
 
 Combined_string_preprocessed = M.Preprocessing(Combined_string)
 Jaccard_matrix_Combined = M.jaccard_matrix(Combined_string_preprocessed) 
-near_ADS = M.nearest_docs(Combined, Jaccard_matrix_ADS, 2, 10)
+near_combined = M.nearest_docs(Combined, Jaccard_matrix_Combined, 2, 10)
