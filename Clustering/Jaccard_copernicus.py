@@ -2,7 +2,7 @@ import Modules as M
 import json
 
 
-with open('copernicus_scrape/CDS_data.json') as f:
+with open('copernicus_data/copernicus_scrape/CDS_data.json') as f:
   CDS = json.load(f)
 
 CDS_string = []
@@ -11,7 +11,7 @@ for i in range(N):
     tmp = json.dumps(CDS[i])
     CDS_string.append(tmp)
 
-with open('copernicus_scrape/ADS_data.json') as f:
+with open('copernuicus_data/copernicus_scrape/ADS_data.json') as f:
   ADS = json.load(f)
 
 ADS_string = []
