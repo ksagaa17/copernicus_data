@@ -25,6 +25,7 @@ def Tokenize(text):
         Contains a token in each entrance.
 
     """
+    
     # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
     tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -53,6 +54,7 @@ def Stemming(tokens, stemmer = nltk.stem.snowball.SnowballStemmer("english")):
         Contains a stemmed token in each entrance.
 
     """
+    
     filtered_tokens = []
     for token in tokens:
         if re.search('[a-zA-Z]', token):
@@ -61,7 +63,7 @@ def Stemming(tokens, stemmer = nltk.stem.snowball.SnowballStemmer("english")):
     return stems
 
 
-def remove_stops(stems, stopwords, amount = 179):
+def remove_stops(stems, stopwords = nltk.corpus.stopwords.words('english'), amount = 179):
     """
     Removes Stopwords
 
@@ -81,9 +83,36 @@ def remove_stops(stems, stopwords, amount = 179):
         Containing no stop words.
 
     """
+    
     filtered_sentence = [w for w in stems if not w in stopwords[:amount]] 
     return filtered_sentence
 
+
+def Preprocessing(text, stemmer = nltk.stem.snowball.SnowballStemmer("english"), stopwords = nltk.corpus.stopwords.words('english')):
+    """
+    Tokenizes, stems and removes stop words from sentences
+
+    Parameters
+    ----------
+    text : list
+        list containing string with the sentences to be preprocessed.
+        
+    stemmer : nltk object
+        Stemming technique
+    
+    stopwords : list of stopwods
+        The words which are unwanted
+
+    Returns
+    -------
+    TYPE list
+        Preprocessed sentences.
+
+    """
+    tokens = [Tokenize(text[i]) for i in range(len(text))]
+    stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
+    no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
+    return no_stops
 
 def jaccard_distance(list1, list2):
     """
@@ -104,6 +133,7 @@ def jaccard_distance(list1, list2):
         The jaccard distance.
 
     """
+    
     set1 = set(list1)
     set2 = set(list2)
     cap = len(set1.intersection(set2))
@@ -127,6 +157,7 @@ def jaccard_matrix(documents):
         documents i and j.
 
     """
+    
     N = len(documents)
     jac_mat = np.zeros((N,N))
     for i in range(N-1):
@@ -159,6 +190,7 @@ def jaccard_matrix_update(old_matrix, old_documents, new_documents):
         Updated Jaccard matrix.
 
     """
+    
     M = len(new_documents)
     N = old_matrix.shape[0]
     jac_mat = np.zeros((N+M,N+M))
@@ -171,8 +203,9 @@ def jaccard_matrix_update(old_matrix, old_documents, new_documents):
     jac_mat[N:,N:] = jaccard_matrix(new_documents)
     return jac_mat
 
+
 #%% #Testing the modules
-with open('../copernicus_scrape/CDS_data.json') as f:
+with open('copernicus_scrape/CDS_data.json') as f:
   text = json.load(f)
   
 text_string = []
@@ -199,7 +232,10 @@ print(no_stops)
 
 
 # Compute jaccard matrix
-tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
-stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
-no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
+no_stops = Preprocessing(text_string, stemmer = stemmer, stopwords = stopwords)
 jaccard_mat = jaccard_matrix(no_stops)
+
+# token_list = []
+# for i in range(N):
+#     tmp2 = Tokenize(text_string[i])
+#     token_list.append(tmp2)    
