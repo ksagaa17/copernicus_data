@@ -230,12 +230,6 @@ stopwords = nltk.corpus.stopwords.words('english')
 no_stops = remove_stops(stems, stopwords, amount = 179) # for instance look at entrace 18 or 19 compared to stems
 print(no_stops)
 
-
 # Compute jaccard matrix
 no_stops = Preprocessing(text_string, stemmer = stemmer, stopwords = stopwords)
 jaccard_mat = jaccard_matrix(no_stops)
-
-# token_list = []
-# for i in range(N):
-#     tmp2 = Tokenize(text_string[i])
-#     token_list.append(tmp2)    
