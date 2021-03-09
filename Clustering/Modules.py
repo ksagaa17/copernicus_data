@@ -8,6 +8,7 @@ import nltk
 import re
 import json
 import numpy as np
+import os
 
 
 def Tokenize(text):
@@ -113,6 +114,7 @@ def Preprocessing(text, stemmer = nltk.stem.snowball.SnowballStemmer("english"),
     stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
     no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
     return no_stops
+
 
 def jaccard_distance(list1, list2):
     """
@@ -271,9 +273,11 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
 
 #%% #Testing the modules
 if __name__ == "__main__":
-    with open('copernicus_scrape/CDS_data.json') as f:
+    pardir = os.path.dirname(os.getcwd())
+    with open(pardir+'/copernicus_scrape/CDS_data.json') as f:
       text = json.load(f)
-      
+    
+    
     text_string = []
     N = len(text)
     for i in range(N):
