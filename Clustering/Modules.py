@@ -110,7 +110,13 @@ def Preprocessing(text, stemmer = nltk.stem.snowball.SnowballStemmer("english"),
         Preprocessed sentences.
 
     """
-    tokens = [Tokenize(text[i]) for i in range(len(text))]
+    text_string = []
+    N = len(text)
+    for i in range(N):
+        tmp = text[i].get("Title") + ' ' + str(text[i].get("Description")) + ' ' + str(text[i].get("Parameters"))
+        text_string.append(tmp)
+    
+    tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
     stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
     no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
     return no_stops
@@ -274,14 +280,21 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
 #%% #Testing the modules
 if __name__ == "__main__":
     pardir = os.path.dirname(os.getcwd())
-    with open(pardir+'/copernicus_scrape/CDS_data.json') as f:
+    with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
       text = json.load(f)
+    
+    
+    # text_string = []
+    # N = len(text)
+    # for i in range(N):
+    #     tmp = json.dumps(text[i])
+    #     text_string.append(tmp)
     
     
     text_string = []
     N = len(text)
     for i in range(N):
-        tmp = json.dumps(text[i])
+        tmp = text[i].get("Title") + ' ' + str(text[i].get("Description")) + ' ' + str(text[i].get("Parameters"))
         text_string.append(tmp)
     
     # nltk.download() # run to download nltk dependencies.
@@ -307,7 +320,7 @@ if __name__ == "__main__":
     no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
     jaccard_mat = jaccard_matrix(no_stops)
     
-    no_stops = Preprocessing(text_string, stemmer = stemmer, stopwords = stopwords)
+    no_stops = Preprocessing(text, stemmer = stemmer, stopwords = stopwords)
     jaccard_mat = jaccard_matrix(no_stops)
     
     near = nearest_docs(text, jaccard_mat, 0, 6)
