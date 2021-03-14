@@ -133,6 +133,15 @@ We use the scripts CDS_bulk.sh and ADS_bulk.sh to add the data to Elasticsearch.
 /Elasticsearch$ ./ADS_bulk.sh
 ```
 
+## Searching in Elasticsearch
+Searching can be done either through the dev tools in Kibana or by using curl in the commandline. 
+
+Search for "temperature" in the dev tool by writing:
+GET /datasetname/\_search?q=temperature
+
+Search in the commandline using curl by writing:
+curl -XGET "http:\\localhost:9200/datasetname/\_search?q=temprature&pretty
+
 ## Compute Jaccard distance between webpages
 In order to compute the Jaccard distance between the scraped webpages run the script Clustering/Jaccard_copernicus.py from the Python IDE of your choice. The functions used in Jaccard_copernicus.py can be found in Clustering/Module.py and are documented in the script.
 
