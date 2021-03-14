@@ -18,7 +18,7 @@ class DataSpider(scrapy.Spider):
     """
     Scrapes: https://cds.climate.copernicus.eu/#!/home for datasets
     and returns a .json file with the title, description and parameters for each dataset.
-    Run this spider with: /main/copernicus_scrape$ scrapy crawl CDSScrapeSpider -o CDS_data.json 
+    Run this spider with: /main/copernicus_scrape$ scrapy crawl CDSScrapeSpider -o data/CDS_data.json 
     """
     # Initializing log file
     logfile("CDSScrapeSpider.log", maxBytes=1e6, backupCount=3)

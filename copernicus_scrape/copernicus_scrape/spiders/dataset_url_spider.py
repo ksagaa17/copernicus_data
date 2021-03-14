@@ -21,7 +21,7 @@ class CDSUrlsSpiderSpider(scrapy.Spider):
     """
     Collects dataset urls from https://cds.climate.copernicus.eu/cdsapp#!/search?type=dataset.
     
-    Run this spider with: /main/copernicus_scrape$ scrapy crawl CDS_dataset_urls_spider -o CDS_dataset_urls.json
+    Run this spider with: /main/copernicus_scrape$ scrapy crawl CDS_dataset_urls_spider -o data/CDS_dataset_urls.json
     """
     # Initializing log file
     logfile("dataset_url_spider.log", maxBytes=1e6, backupCount=3)
@@ -35,6 +35,14 @@ class CDSUrlsSpiderSpider(scrapy.Spider):
 
     def parse_urls(self, response):
         # Use headless option to not open a new browser window
+
+        # FIREFOX
+        # options = webdriver.FirefoxOptions()
+        # options.add_argument("headless")
+        # desired_capabilities = options.to_capabilities()
+        # driver = webdriver.Firefox(desired_capabilities=desired_capabilities)
+        
+        # CHROME
         options = webdriver.ChromeOptions()
         options.add_argument("headless")
         desired_capabilities = options.to_capabilities()
@@ -75,7 +83,7 @@ class CDSUrlsSpiderSpider(scrapy.Spider):
 class ADSUrlsSpiderSpider(scrapy.Spider):
     """
     Collects dataset urls from https://ads.atmosphere.copernicus.eu/cdsapp#!/search?type=dataset
-    Run this spider with: /main/copernicus_scrape$ scrapy crawl ADS_dataset_urls_spider -o ADS_dataset_urls.json
+    Run this spider with: /main/copernicus_scrape$ scrapy crawl ADS_dataset_urls_spider -o data/ADS_dataset_urls.json
     """
     # Initializing log file
     logfile("dataset_url_spider.log", maxBytes=1e6, backupCount=3)
@@ -89,6 +97,14 @@ class ADSUrlsSpiderSpider(scrapy.Spider):
 
     def parse_urls(self, response):
         # Use headless option to not open a new browser window
+
+        # FIREFOX
+        # options = webdriver.FirefoxOptions()
+        # options.add_argument("headless")
+        # desired_capabilities = options.to_capabilities()
+        # driver = webdriver.Firefox(desired_capabilities=desired_capabilities)
+        
+        # CHROME
         options = webdriver.ChromeOptions()
         options.add_argument("headless")
         desired_capabilities = options.to_capabilities()
