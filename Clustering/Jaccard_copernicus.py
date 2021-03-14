@@ -11,7 +11,7 @@ import os
 #%%CDS
 pardir = os.path.dirname(os.getcwd())
 
-with open(pardir+'/copernicus_scrape/CDS_data.json') as f:
+with open(pardir+'/copernicus_scrape/data/CDS_data.json') as f:
   CDS = json.load(f)
     
 CDS_string_preprocessed = M.Preprocessing(CDS)
@@ -22,7 +22,7 @@ near_thres_CDS = M.nearest_docs_thres(CDS, Jaccard_matrix_CDS, 0, 0.45)
 #%%ADS
 pardir = os.path.dirname(os.getcwd())
 
-with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
+with open(pardir+'/copernicus_scrape/data/ADS_data.json') as f:
   ADS = json.load(f)
 
 ADS_string_preprocessed = M.Preprocessing(ADS)
@@ -33,10 +33,10 @@ near_thres_ADS = M.nearest_docs_thres(ADS, Jaccard_matrix_ADS, 0, 0.45)
 #%% Both
 pardir = os.path.dirname(os.getcwd())
 
-with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
+with open(pardir+'/copernicus_scrape/data/ADS_data.json') as f:
     Combined1 = json.load(f)
 
-with open(pardir+'/copernicus_scrape/CDS_data.json') as f:
+with open(pardir+'/copernicus_scrape/data/CDS_data.json') as f:
     Combined2 = json.load(f)
 
 Combined = Combined1 + Combined2

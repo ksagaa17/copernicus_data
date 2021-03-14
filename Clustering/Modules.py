@@ -284,7 +284,7 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
 #%% #Testing the modules
 if __name__ == "__main__":
     pardir = os.path.dirname(os.getcwd())
-    with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
+    with open(pardir+'/copernicus_scrape/data/ADS_data.json') as f:
       text = json.load(f)
         
     text_string = []
