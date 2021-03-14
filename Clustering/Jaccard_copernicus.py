@@ -62,7 +62,7 @@ near_thres_ADS = M.nearest_docs_thres(ADS, Jaccard_matrix_ADS, 0, 0.45)
 # near_combined = M.nearest_docs(Combined, Jaccard_matrix_Combined, 2, 5)
 # near_thres_Combined = M.nearest_docs_thres(Combined, Jaccard_matrix_Combined, 0, 0.45)
 
-Jaccard_matrix_Combined = M.jaccard_matrix_update(Jaccard_matrix_ADS, 
-                                                  ADS_string_preprocessed, CDS_string_preprocessed)
-near_ADS = M.nearest_docs(ADS, Jaccard_matrix_ADS, 2, 5)
-near_thres_ADS = M.nearest_docs_thres(ADS, Jaccard_matrix_ADS, 0, 0.45)
+#Jaccard_matrix_Combined = M.jaccard_matrix_update(Jaccard_matrix_CDS, 
+#                                                  CDS_string_preprocessed, ADS_string_preprocessed)
+#near_Combined = M.nearest_docs(ADS, Jaccard_matrix_Combined, 8, 5)
+#near_thres_Combined = M.nearest_docs_thres(ADS, Jaccard_matrix_Combined, 0, 0.45)
