@@ -133,8 +133,8 @@ We use the scripts CDS_bulk.sh and ADS_bulk.sh to add the data to Elasticsearch.
 /Elasticsearch$ ./ADS_bulk.sh
 ```
 
-## Compute Jaccard distance between datasets
-
+## Compute Jaccard distance between webpages
+In order to compute the Jaccard distance between the scraped webpages run the script Clustering/Jaccard_copernicus.py from the Python IDE of your choice. The functions used in Jaccard_copernicus.py can be found in Clustering/Module.py and are documented in the script.
 
 
 [comment]: <> (git remote add origin https://github.com/ksagaa17/copernicus_data.git)
