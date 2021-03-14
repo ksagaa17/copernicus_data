@@ -1,7 +1,7 @@
 """
 This script contains functions for tokenisation, stemming and removing stop words
-used as preprocessing for the clustering process. As well as function for calculating a Jaccard
-distance and determining the k closest neighbours to a given webpage.
+used as preprocessing for the clustering process. As well as function for calculating
+a Jaccard distance and determining the k closest neighbours to a given webpage.
 """
 
 
@@ -286,15 +286,7 @@ if __name__ == "__main__":
     pardir = os.path.dirname(os.getcwd())
     with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
       text = json.load(f)
-    
-    
-    # text_string = []
-    # N = len(text)
-    # for i in range(N):
-    #     tmp = json.dumps(text[i])
-    #     text_string.append(tmp)
-    
-    
+        
     text_string = []
     N = len(text)
     for i in range(N):
@@ -318,15 +310,7 @@ if __name__ == "__main__":
     print(no_stops)
     
     # Compute jaccard matrix
-    
-    tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
-    stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
-    no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
-    jaccard_mat = jaccard_matrix(no_stops)
-    
     no_stops = Preprocessing(text, stemmer = stemmer, stopwords = stopwords)
-    jaccard_mat = jaccard_matrix(no_stops)
-    
-    near = nearest_docs(text, jaccard_mat, 0, 6)
-    
+    jaccard_mat = jaccard_matrix(no_stops)    
+    near = nearest_docs(text, jaccard_mat, 0, 6)    
     near_thres = nearest_docs_thres(text, jaccard_mat, 0, 0.45)
