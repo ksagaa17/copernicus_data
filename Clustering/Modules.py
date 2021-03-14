@@ -1,6 +1,7 @@
 """
 This script contains functions for tokenisation, stemming and removing stop words
-used as preprocessing for the clustering process.
+used as preprocessing for the clustering process. As well as function for calculating a Jaccard
+distance and determining the k closest neighbours to a given webpage.
 """
 
 

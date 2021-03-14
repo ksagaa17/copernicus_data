@@ -1,3 +1,8 @@
+"""
+In this module we calculate the Jaccard distance between all the collected webpages
+from the athmophere data store and the climate data store on copernicus.eu
+"""
+
 import Modules as M
 import json
 import os
