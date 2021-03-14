@@ -134,14 +134,18 @@ We use the scripts CDS_bulk.sh and ADS_bulk.sh to add the data to Elasticsearch.
 ```
 
 ## Searching in Elasticsearch
-Searching can be done either through the dev tools in Kibana or by using curl in the commandline. 
+Searching can be done either through the dev tools in Kibana or by using curl in the command line. 
 
-Search for "temperature" in the dev tool by writing:
+Search for temperature in the dev tool by writing:
 ```shell
 GET /datasetname/_search?q=temperature
 ```
 
-Search for temperature in the commandline using curl by writing:
+Search for temperature in the command line using curl by writing:
+```shell
+sudo apt install curl
+```
+
 ```shell
 curl -XGET "http:\\localhost:9200/datasetname/_search?q=temprature&pretty
 ```
