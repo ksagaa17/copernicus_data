@@ -138,12 +138,12 @@ Searching can be done either through the dev tools in Kibana or by using curl in
 
 Search for "temperature" in the dev tool by writing:
 ```shell
-GET /datasetname/\_search?q=temperature
+GET /datasetname/_search?q=temperature
 ```
 
 Search for temperature in the commandline using curl by writing:
 ```shell
-curl -XGET "http:\\localhost:9200/datasetname/\_search?q=temprature&pretty
+curl -XGET "http:\\localhost:9200/datasetname/_search?q=temprature&pretty
 ```
 
 ## Compute Jaccard distance between webpages
