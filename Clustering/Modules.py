@@ -111,6 +111,7 @@ def Preprocessing(text, stemmer = nltk.stem.snowball.SnowballStemmer("english"),
         Preprocessed sentences.
 
     """
+    
     text_string = []
     N = len(text)
     for i in range(N):
@@ -237,6 +238,7 @@ def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
         List of dicts containing the 10 nearest documents and the Jaccard distance.
 
     """
+    
     choose_docs = jaccard_mat[doc_num]
     indeces = np.argsort(choose_docs)[:number_of_docs+1]
     indeces = indeces[indeces != doc_num]
@@ -269,6 +271,7 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
         List of dicts containing the nearest documents and the Jaccard distance.
 
     """
+    
     choose_docs = jaccard_mat[doc_num]
     indeces = (choose_docs <= thres)
     indeces = np.arange(len(choose_docs))[indeces]
@@ -298,7 +301,7 @@ if __name__ == "__main__":
         tmp = text[i].get("Title") + ' ' + str(text[i].get("Description")) + ' ' + str(text[i].get("Parameters"))
         text_string.append(tmp)
     
-    # nltk.download() # run to download nltk dependencies.
+    #nltk.download() # run to download nltk dependencies.
     
     # Tokenisation
     tokens = Tokenize(text_string[0])    
@@ -327,4 +330,3 @@ if __name__ == "__main__":
     near = nearest_docs(text, jaccard_mat, 0, 6)
     
     near_thres = nearest_docs_thres(text, jaccard_mat, 0, 0.45)
-
