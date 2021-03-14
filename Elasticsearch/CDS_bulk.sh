@@ -1,9 +1,10 @@
 #!/bin/sh
 
 ES_HOST=localhost:9200
+cd ..
 WD=$(pwd)
-JSON_FILE_IN=$WD/copernicus_scrape/CDS_data.json
-JSON_FILE_OUT=$WD/bulk_CDS_data.json
+JSON_FILE_IN=$WD/copernicus_scrape/data/CDS_data.json
+JSON_FILE_OUT=$WD/Elasticsearch/bulk_CDS_data.json
 
 PYTHON="import json,sys;
 out = open('$JSON_FILE_OUT', 'w');
@@ -18,6 +19,4 @@ with open('$JSON_FILE_IN') as json_in:
 
 python3 -c "$PYTHON"
 
-echo "nu"
-
-curl -s -XPOST $ES_HOST/copernicus3/_bulk -H 'Content-Type: application/json' --data-binary @$JSON_FILE_OUT
+curl -s -XPOST $ES_HOST/copernicus2/_bulk -H 'Content-Type: application/json' --data-binary @$JSON_FILE_OUT
