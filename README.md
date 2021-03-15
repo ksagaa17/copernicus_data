@@ -21,6 +21,9 @@ For this project we have used:
 Other dependencies:
 - logzero 1.6.3
 - numpy 1.19.2
+- nltk 3.5
+- re 2.2.1
+- json 2.0.9
 
 Elasticsearch is based on java and therefore we need Open JDK 11 on our machine.
 
@@ -75,10 +78,12 @@ $ sudo systemctl start kibana
 ```
 Kibana will per default run on localhost:5601 (http://localhost:5601)
 
-### Scrapy
-
+Installing scrapy is easy on linux.
+```shell
+$ pip install scrapy
+```
 ### Selenium 
-Installing selenium is easy on linux. 
+Installing selenium is also easy on linux. 
 ```shell
 $ pip install selenium
 ```
@@ -94,11 +99,11 @@ $ sudo apt install firefox-geckodriver
 ```
 
 ## Scraping the data stores
-First we create a scrapy project
+First we create a scrapy project named copernicus_scrape
 ```shell
-$ 
+$ scrapy startproject copernicus_scrape
 ```
-In the scripts settings.py we enable AutoThrottle and set start delay to 5. This is done since **why?**
+In the scripts settings.py we enable AutoThrottle and set start delay to 5. 
 ```
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -123,6 +128,7 @@ Afterwards the datascraping spiders are run by
 /main/copernicus_scrape$ scrapy crawl CDSScrapeSpider -o data/CDS_data.json 
 /main/copernicus_scrape$ scrapy crawl ADSScrapeSpider -o data/ADS_data.json 
 ```
+The data is stored in the files CDS_data.json and ADS_data.json in copernicus_scrape/data.
 
 ## Adding data to Elasticsearch
 In order to add the data to Elasticsearch we use the bulk API. This is described in https://stackoverflow.com/questions/33980591/insert-multiple-documents-in-elasticsearch.
@@ -132,7 +138,7 @@ We use the scripts CDS_bulk.sh and ADS_bulk.sh to add the data to Elasticsearch.
 /Elasticsearch$ chmod u+x ADS_bulk.sh
 /Elasticsearch$ ./ADS_bulk.sh
 ```
-
+Opening http://localhost:5601, we can under Manage click on Index Management and see that we have added the data to Elasticsearch.
 ## Searching in Elasticsearch
 Searching can be done either through the dev tools in Kibana or by using curl in the command line. 
 
@@ -153,6 +159,12 @@ curl -XGET "http:\\localhost:9200/datasetname/_search?q=temprature&pretty
 ## Compute Jaccard distance between webpages
 In order to compute the Jaccard distance between the scraped webpages run the script Clustering/Jaccard_copernicus.py from the Python IDE of your choice. The functions used in Jaccard_copernicus.py can be found in Clustering/Module.py and are documented in the script.
 
+In order to use the tools in the nltk module we must first download the content using
+```python
+import nltk
+nltk.download()
+```
+This should open a window from which we can download what we need. We use the Snowball stemmer and the list of stopwords included in nltk.
 
 [comment]: <> (git remote add origin https://github.com/ksagaa17/copernicus_data.git)
 
