@@ -18,11 +18,11 @@ class DataSpider(scrapy.Spider):
     """
     Scrapes: https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-reanalysis-eac4-monthly?tab=overview
     And returns a .json file with the title, description and parameters of the page
-    Run this spider with: /main/copernicus_scrape$ scrapy crawl ScrapeSpider -o ScrapeSpider.json 
+    Run this spider with: /main/copernicus_scrape$ scrapy crawl ADSScrapeSpider -o data/ADS_data.json 
     """
     # Initializing log file
     logfile("DataScrapeSpider.log", maxBytes=1e6, backupCount=3)
-    name = "DataScrapeSpider"
+    name = "ADSScrapeSpider"
     allowed_domains = ["toscrape.com"]
 
     # Using a dummy website to start scrapy request
@@ -32,11 +32,14 @@ class DataSpider(scrapy.Spider):
 
     def parse_urls(self, response):
         #Use headless option to not open a new browser window
+        
+        # FIREFOX
         # options = webdriver.FirefoxOptions()
         # options.add_argument("headless")
         # desired_capabilities = options.to_capabilities()
         # driver = webdriver.Firefox(desired_capabilities=desired_capabilities)
         
+        # CHROME
         options = webdriver.ChromeOptions()
         options.add_argument("headless")
         desired_capabilities = options.to_capabilities()
@@ -73,7 +76,7 @@ class DataSpider(scrapy.Spider):
             wait = WebDriverWait(driver, 5)
             wait.until(EC.presence_of_element_located((By.CLASS_NAME, "abstract-text")))
         
-            # # Description
+            # Description
             descriptions = driver.find_elements_by_class_name("abstract-text")
             description_count = 0
             tmp1 = []

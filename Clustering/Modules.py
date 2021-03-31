@@ -1,6 +1,7 @@
 """
 This script contains functions for tokenisation, stemming and removing stop words
-used as preprocessing for the clustering process.
+used as preprocessing for the clustering process. As well as function for calculating
+a Jaccard distance and determining the k closest neighbours to a given webpage.
 """
 
 
@@ -110,6 +111,7 @@ def Preprocessing(text, stemmer = nltk.stem.snowball.SnowballStemmer("english"),
         Preprocessed sentences.
 
     """
+    
     text_string = []
     N = len(text)
     for i in range(N):
@@ -236,6 +238,7 @@ def nearest_docs(documents, jaccard_mat, doc_num, number_of_docs=10):
         List of dicts containing the 10 nearest documents and the Jaccard distance.
 
     """
+    
     choose_docs = jaccard_mat[doc_num]
     indeces = np.argsort(choose_docs)[:number_of_docs+1]
     indeces = indeces[indeces != doc_num]
@@ -268,6 +271,7 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
         List of dicts containing the nearest documents and the Jaccard distance.
 
     """
+    
     choose_docs = jaccard_mat[doc_num]
     indeces = (choose_docs <= thres)
     indeces = np.arange(len(choose_docs))[indeces]
@@ -280,24 +284,16 @@ def nearest_docs_thres(documents, jaccard_mat, doc_num, thres=0.5):
 #%% #Testing the modules
 if __name__ == "__main__":
     pardir = os.path.dirname(os.getcwd())
-    with open(pardir+'/copernicus_scrape/ADS_data.json') as f:
+    with open(pardir+'/copernicus_scrape/data/ADS_data.json') as f:
       text = json.load(f)
-    
-    
-    # text_string = []
-    # N = len(text)
-    # for i in range(N):
-    #     tmp = json.dumps(text[i])
-    #     text_string.append(tmp)
-    
-    
+        
     text_string = []
     N = len(text)
     for i in range(N):
         tmp = text[i].get("Title") + ' ' + str(text[i].get("Description")) + ' ' + str(text[i].get("Parameters"))
         text_string.append(tmp)
     
-    # nltk.download() # run to download nltk dependencies.
+    #nltk.download() # run to download nltk dependencies.
     
     # Tokenisation
     tokens = Tokenize(text_string[0])    
@@ -314,16 +310,7 @@ if __name__ == "__main__":
     print(no_stops)
     
     # Compute jaccard matrix
-    
-    tokens = [Tokenize(text_string[i]) for i in range(len(text_string))]
-    stems = [Stemming(tokens[i], stemmer = stemmer) for i in range(len(tokens))]
-    no_stops = [remove_stops(stems[i], stopwords, amount = 179) for i in range(len(stems))]
-    jaccard_mat = jaccard_matrix(no_stops)
-    
     no_stops = Preprocessing(text, stemmer = stemmer, stopwords = stopwords)
-    jaccard_mat = jaccard_matrix(no_stops)
-    
-    near = nearest_docs(text, jaccard_mat, 0, 6)
-    
+    jaccard_mat = jaccard_matrix(no_stops)    
+    near = nearest_docs(text, jaccard_mat, 0, 6)    
     near_thres = nearest_docs_thres(text, jaccard_mat, 0, 0.45)
-
