@@ -16,7 +16,7 @@ with open(pardir+'/copernicus_scrape/data/CDS_data.json') as f:
     
 CDS_string_preprocessed = M.Preprocessing(CDS)
 Jaccard_matrix_CDS = M.jaccard_matrix(CDS_string_preprocessed)
-near_CDS = M.nearest_docs(CDS, Jaccard_matrix_CDS, 95, 5)
+near_CDS = M.nearest_docs(CDS, Jaccard_matrix_CDS, 91, 5)
 near_thres_CDS = M.nearest_docs_thres(CDS, Jaccard_matrix_CDS, 0, 0.45)
 
 #%%ADS
