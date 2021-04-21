@@ -25,4 +25,25 @@ df_small = df.loc[df['track_id'].isin(df_arrive['track_id'])]
 df_eta = df_small.loc[df_small['status'] != 14]
 
 df_final = df_small.loc[df_small['track_id'].isin(df_eta['track_id'])]
+
+
 # Vi vil i sidste ende gerne kunne regne mean(|eta - ata|)
+
+# parametre vi vil teste
+
+# eta1
+# givet et skib og hvor det er på vej hen
+
+# det beregner en rute og givet nogle historiske hastigheder beregnes en eta.
+
+# Givet en log hvor godt rammer vi tidspunktet
+
+# 90 % bedste bud hvor godt rammer vi ata, 
+
+# Hvor godt performer vi for erp_eta.
+
+
+# eta2
+# Containerskibe - kan lave eta på en hele rute
+
+# destination predictor
