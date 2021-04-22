@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import os
 
 #%%
 # functionen skal lige nu have to timestaps i vores format.
@@ -16,7 +17,7 @@ def TimeDifference(time_1,time_2):
     return abs(sek_diff)
 
 
-def HD_trackid(track_id, df):
+def HD_trackid(df, track_id):
     """
     extracts hours and days for a given track_id of a dataframe
     """
@@ -29,15 +30,15 @@ def HD_trackid(track_id, df):
     return hours, days
 
 
-def ata_Extract(df, track_id):
-    """
-    Extracts the eta_erp, eta_ais and ata_ais on a given time for a dataframe
+# def ata_Extract(df, track_id):
+#     """
+#     Extracts the eta_erp, eta_ais and ata_ais on a given time for a dataframe
 
-    """
-    indexes = df.query('track_id == {0}'.format(track_id)).index
-    ata_ais = df['ata_ais'][indexes]
-    ata_ais = ata_ais.unique()
-    return ata_ais
+#     """
+#     indexes = df.query('track_id == {0}'.format(track_id)).index
+#     ata_ais = df['ata_ais'][indexes]
+#     ata_ais = ata_ais.unique()
+#     return ata_ais
 
 
 def TimeExtract(df, hour, day, track_id):
@@ -55,7 +56,8 @@ def TimeExtract(df, hour, day, track_id):
 
 
 #%%
-df = pd.read_csv("Maritime/data/tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
+pardir = os.path.dirname(os.getcwd())
+df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
 df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
               'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
 
@@ -81,13 +83,12 @@ sek_diff = TimeDifference(time_1, time_2)
 
 #Test HD_trackid
 track_ids = df.track_id.unique()
-
-
+Hour, days = HD_trackid(df, 4359391821106)
 
 #test ata_extract
-ata_ais = df['ata_ais'].to_numpy().astype(str)
-nan_ata = ata_ais != 'nan'
-
+# ata_ais = df['ata_ais'].to_numpy().astype(str)
+# nan_ata = ata_ais != 'nan'
+# ata_Extract = ata_Extract(df, track_id)
 
 # Test time extract
 eta_erp, eta_ais = TimeExtract(df, 8, 1, 4359391821106)
