@@ -6,6 +6,7 @@ Created on Tue Apr 20 17:06:26 2021
 
 import pandas as pd
 import numpy as np
+import math
 
 df = pd.read_csv("data/tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
 df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
@@ -18,14 +19,42 @@ number_of_ids = len(np.unique(track_id))
 status = df['status'].to_numpy()
 arrivals = np.sum(status == 14)
 
-df_arrive = df.loc[df['status'] == 14]
+# remove ships that has not arrived
+df_arrive = df[df['status'] == 14]
+df = df[df['track_id'].isin(df_arrive['track_id'])]
 
-df_small = df.loc[df['track_id'].isin(df_arrive['track_id'])]
+# remove ships that only has status 14 in the log
+df_eta = df[df['status'] != 14]
+df = df[df['track_id'].isin(df_eta['track_id'])]
+df = df.sort_values(by=['track_id', 'stamp'])
 
-df_eta = df_small.loc[df_small['status'] != 14]
 
-df_final = df_small.loc[df_small['track_id'].isin(df_eta['track_id'])]
+# Look at one track
+df_first_track = df[df['track_id'] == df['track_id'].to_numpy()[0]]
+df_first_track = df_first_track.sort_values(by=['stamp'])
+# df_first_track.to_csv('data/one_track.csv', sep='|')
 
+# remove ships that has nan in all eta and ata
+eta_ais = df['eta_ais'].to_numpy().astype(str)
+ata_ais = df['ata_ais'].to_numpy().astype(str)
+nan_eta = eta_ais != 'nan'
+nan_ata = ata_ais != 'nan'
+nan_ata_eta = nan_eta + nan_ata
+
+df = df[nan_ata_eta]
+df = df.set_index(np.arange(df.shape[0]))
+
+# remove multiple status 14 for ships
+status = df['status'].to_numpy()
+a = status != 14
+b = np.roll(a, 1)
+df = df[a+b]
+
+
+# for i in range(1,df_final.shape[0]):
+#     if status[i] == 14 and status[i-1] == 14:
+#         df_final2 = df_final.drop(i)
+        
 
 # Vi vil i sidste ende gerne kunne regne mean(|eta - ata|)
 
