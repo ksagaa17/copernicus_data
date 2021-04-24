@@ -37,11 +37,6 @@ def clean_data(df):
     df = df.sort_values(by=['track_id', 'stamp'])
     
     
-    # Look at one track
-    df_first_track = df[df['track_id'] == df['track_id'].to_numpy()[0]]
-    df_first_track = df_first_track.sort_values(by=['stamp'])
-    # df_first_track.to_csv('data/one_track.csv', sep='|')
-    
     # remove ships that has nan in all eta and ata
     eta_ais = df['eta_ais'].to_numpy().astype(str)
     ata_ais = df['ata_ais'].to_numpy().astype(str)
