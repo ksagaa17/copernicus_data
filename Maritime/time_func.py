@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from datetime import datetime
 import os
 
@@ -8,7 +7,19 @@ def TimeDifference(time_1,time_2):
     """
     Calculates absolute time difference between two timestamps in the 
     YYYY-mm-dd HH:MM:SS format.
+    Parameters
+    ----------
+    time_1 : str
+        first timestamp.
+    time_2: str
+        second timestamp.
+
+    Returns
+    -------
+    sek_diff : int 
+        absolute time difference between time_1 and time_2.
     """
+    
     FMT = '%Y-%m-%d %H:%M:%S'
     tdelta = datetime.strptime(time_1, FMT) - datetime.strptime(time_2, FMT)
     sek_diff = tdelta.days * 24 * 3600 + tdelta.seconds
@@ -17,21 +28,46 @@ def TimeDifference(time_1,time_2):
 
 def Day_trackid(df, track_id):
     """
-    extracts days for a given track_id of a dataframe
+    Extracts days for a given track_id of a dataframe
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    track_id: int
+        A track_id from df
+
+    Returns
+    -------
+    days : ndarray 
+        days related to the track_id.
+
     """
-    indexes = df.query('track_id == {0}'.format(track_id)).index
-    #hours = df['hour'][indexes]
-    days = df['day'][indexes]
     
-    #hours = hours.unique()  
+    indexes = df.query('track_id == {0}'.format(track_id)).index
+    days = df['day'][indexes]
     days = days.unique()  
     return days
 
 
 def Hour_trackid(df, track_id, day):
     """
-    extracts hours for a given track_id and day of a dataframe
+    Extracts hours for a given track_id and day of a dataframe
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    track_id: int
+        A track_id from df
+    day: int
+        A day for which track_id has data
+
+    Returns
+    -------
+    hours : ndarray 
+        hours related to the track_id for the given day.
+
     """
+    
     indexes = df.query('track_id == {0} & day == {1}'.format(track_id, day)).index
     hours = df['hour'][indexes] 
     hours = hours.unique()    
@@ -40,9 +76,20 @@ def Hour_trackid(df, track_id, day):
 
 def ata_Extract(df, track_id):
      """
-     Extracts the ata_ais for a given track_id for a dataframe
+    Extracts the ata_ais for a given track_id for a dataframe
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    track_id: int
+        A track_id from df
 
+    Returns
+    -------
+    ata_ais : ndarray 
+        ata_ais for the given track_id.
      """
+     
      indexes = df.query('track_id == {0}'.format(track_id)).index
      ata_ais = df['ata_ais'][indexes]
      ata_ais = ata_ais.unique()
@@ -54,6 +101,7 @@ def eta_Extract(df, hour, day, track_id):
     Extracts the eta_erp and eta_ais at a given time and track_id for a dataframe
 
     """
+    
     indexes = df.query('hour == {0} & day == {1} & track_id == {2}'.format(hour, day, track_id)).index
     eta_erp = df['eta_erp'][indexes]
     eta_ais = df['eta_ais'][indexes]
