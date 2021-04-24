@@ -52,41 +52,31 @@ def clean_data(df):
     a = status != 14
     b = np.roll(a, 1)
     df = df[a+b]
+    
+    # remove rows with status 16
+    df = df[df['status'] != 16]
+    
+    # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
+    # df['hour'] = pd.to_datetime(df['stamp']).dt.hour
+    # df['day'] = pd.to_datetime(df['stamp']).dt.day
     return df
 
-df = pd.read_csv("data/tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
-df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
-              'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
 
+if __name__ == "__main__":
+    df = pd.read_csv("data/tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
+    df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                  'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+    
+    
+    df = df.sort_values(by=['track_id'])
+    track_id = df['track_id'].to_numpy()
+    number_of_ids = len(np.unique(track_id))
+    
+    status = df['status'].to_numpy()
+    arrivals = np.sum(status == 14)
+    
+    df2 = clean_data(df)
+    
+            
+    
 
-df = df.sort_values(by=['track_id'])
-track_id = df['track_id'].to_numpy()
-number_of_ids = len(np.unique(track_id))
-
-status = df['status'].to_numpy()
-arrivals = np.sum(status == 14)
-
-df2 = clean_data(df)
-
-        
-
-# Vi vil i sidste ende gerne kunne regne mean(|eta - ata|)
-
-# parametre vi vil teste
-
-# eta1
-# givet et skib og hvor det er på vej hen
-
-# det beregner en rute og givet nogle historiske hastigheder beregnes en eta.
-
-# Givet en log hvor godt rammer vi tidspunktet
-
-# 90 % bedste bud hvor godt rammer vi ata, 
-
-# Hvor godt performer vi for erp_eta.
-
-
-# eta2
-# Containerskibe - kan lave eta på en hele rute
-
-# destination predictor
