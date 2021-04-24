@@ -74,7 +74,7 @@ def Hour_trackid(df, track_id, day):
     return hours
 
 
-def ata_Extract(df, track_id):
+def ata_Extract(df, track_id, status = 14):
      """
     Extracts the ata_ais for a given track_id for a dataframe
     Parameters
@@ -90,7 +90,7 @@ def ata_Extract(df, track_id):
         ata_ais for the given track_id.
      """
      
-     indexes = df.query('track_id == {0}'.format(track_id)).index
+     indexes = df.query('track_id == {0} & status == {1}'.format(track_id, status)).index
      ata_ais = df['ata_ais'][indexes]
      ata_ais = ata_ais.unique()
      return ata_ais
@@ -144,4 +144,4 @@ hours = Hour_trackid(df, 4359391821106, 1)
 
 # Test time extract
 eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
-ata_ais = ata_Extract(df, 4359391821106)
+ata_ais = ata_Extract(df, track_ids[20])
