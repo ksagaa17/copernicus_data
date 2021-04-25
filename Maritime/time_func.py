@@ -33,7 +33,6 @@ def clean_data(df):
     df = df[df['track_id'].isin(df_eta['track_id'])]
     df = df.sort_values(by=['track_id', 'stamp'])
     
-    
     # remove ships that has nan in all eta and ata
     eta_ais = df['eta_ais'].to_numpy().astype(str)
     ata_ais = df['ata_ais'].to_numpy().astype(str)
@@ -52,10 +51,6 @@ def clean_data(df):
     
     # remove rows with status 16
     df = df[df['status'] != 16]
-    
-    # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
-    # df['hour'] = pd.to_datetime(df['stamp']).dt.hour
-    # df['day'] = pd.to_datetime(df['stamp']).dt.day
     return df
 
 
@@ -230,7 +225,7 @@ if __name__ == "__main__":
     eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
     ata_ais = ata_Extract(df, track_ids[20])
 
-#%%
+#%% Trip lengths
 n = len(track_ids)
 j = 0
 trip_lengths = np.zeros(n)
@@ -243,7 +238,7 @@ for track_id in track_ids:
     trip_lengths[j] = tmp
     j+=1
 
-#%%
+#%% Finding the differences
 longest_trip = int(np.max(trip_lengths))
 difference_ais = np.zeros((n, longest_trip))
 difference_erp = np.zeros((n, longest_trip))
@@ -257,33 +252,38 @@ for track_id in track_ids:
         hours = Hour_trackid(df, track_id, day)
         for hour in hours:
             eta_erp, eta_ais = eta_Extract(df, hour, day, track_id)
-            if len(eta_erp) != 0:
+            k = len(eta_erp)
+            l = len(eta_ais)
+            if k != 0:
                 for eta in eta_erp:
-                    difference_erp[j, i] += TimeDifference(eta_erp, ata_ais[0])(len(eta_erp))
-            if len(eta_ais) !=0:
-                for eta in eta_erp:
-                    difference_ais[j, i] += TimeDifference(eta_ais, ata_ais[0])(len(eta_ais))
+                    difference_erp[j, i] += TimeDifference(eta, ata_ais[0])/k
+            if l !=0:
+                for eta in eta_ais:
+                    difference_ais[j, i] += TimeDifference(eta, ata_ais[0])/l
             j+=1
             i+=1
             
-#%%Normalising
-
-
-
-#%%
-# time = [i for i in range(527)]
-# tickets = [i*3 for i in range(int(np.floor(527/3)))]
-# plt.style.use('seaborn-darkgrid')
-# fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
-# ax[0].bar(hours, difference_ais)
-# ax[1].bar(hours, difference_erp)
-# ax[0].set_title("Eta_ais")
-# ax[1].set_title("Eta_erp")
-# ax[0].set_xlabel("Hour")
-# ax[1].set_xlabel("Hour")
-# ax[0].set_ylabel("Absolute time difference")
-# ax[0].set_xticks(tickets)
-# ax[1].set_xticks(tickets)
-# fig.subplots_adjust(hspace=0.1, wspace=0.1)
-# plt.savefig("Maritime/figures/hourlydiff.pdf")
-# plt.show()
+#%% Meaning
+mean_ais = np.zeros(n)
+mean_erp = np.zeros(n)
+for i in range(longest_trip):
+    mean_erp[i] = np.sum(difference_erp[:,i])/(np.count_nonzero(difference_erp[:,i]))
+    mean_ais[i] = np.sum(difference_ais[:,i])/(np.count_nonzero(difference_ais[:,i]))
+    
+#%% Plotting
+time = [i for i in range(527)]
+tickets = [i*3 for i in range(int(np.floor(527/3)))]
+plt.style.use('seaborn-darkgrid')
+fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
+ax[0].bar(hours, mean_ais)
+ax[1].bar(hours, mean_erp)
+ax[0].set_title("Eta_ais")
+ax[1].set_title("Eta_erp")
+ax[0].set_xlabel("Hour")
+ax[1].set_xlabel("Hour")
+ax[0].set_ylabel("Absolute time difference")
+ax[0].set_xticks(tickets)
+ax[1].set_xticks(tickets)
+fig.subplots_adjust(hspace=0.1, wspace=0.1)
+plt.savefig("Maritime/figures/hourlydiff.pdf")
+plt.show()
