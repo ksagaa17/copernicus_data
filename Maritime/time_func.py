@@ -2,8 +2,63 @@ import pandas as pd
 from datetime import datetime
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 #%%
+def clean_data(df):
+    """
+    Clean data. I loggen er der nogle stamps som ikke er relavante ifm at beregne
+    performance af ETA1 algoritmen. fx er der skibe som kun har ankomsttid og skibe
+    som ikke er ankommet endnu. Derudover er ankomst tiden gentaget mange gange i loggen.
+    Ydermere er der nogle eksempler på skibe som hverken har eta_ais eller eta_ais.
+    Alt dette overkydende data fjernes med denne funktion. 
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+
+    Returns
+    -------
+    df : pandas dataframe
+        Cleaned log.
+
+    """
+    # remove ships that has not arrived
+    df_arrive = df[df['status'] == 14]
+    df = df[df['track_id'].isin(df_arrive['track_id'])]
+    
+    # remove ships that only has status 14 in the log
+    df_eta = df[df['status'] != 14]
+    df = df[df['track_id'].isin(df_eta['track_id'])]
+    df = df.sort_values(by=['track_id', 'stamp'])
+    
+    
+    # remove ships that has nan in all eta and ata
+    eta_ais = df['eta_ais'].to_numpy().astype(str)
+    ata_ais = df['ata_ais'].to_numpy().astype(str)
+    nan_eta = eta_ais != 'nan'
+    nan_ata = ata_ais != 'nan'
+    nan_ata_eta = nan_eta + nan_ata
+    
+    df = df[nan_ata_eta]
+    df = df.set_index(np.arange(df.shape[0]))
+    
+    # remove multiple status 14 for ships
+    status = df['status'].to_numpy()
+    a = status != 14
+    b = np.roll(a, 1)
+    df = df[a+b]
+    
+    # remove rows with status 16
+    df = df[df['status'] != 16]
+    
+    # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
+    # df['hour'] = pd.to_datetime(df['stamp']).dt.hour
+    # df['day'] = pd.to_datetime(df['stamp']).dt.day
+    return df
+
+
 def TimeDifference(time_1,time_2):
     """
     Calculates absolute time difference between two timestamps in the 
@@ -155,15 +210,7 @@ if __name__ == "__main__":
     df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
                   'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
     
-    #Cleaning
-    # remove ships that has not arrived alla Kristian
-    df_arrive = df[df['status'] == 14]
-    df = df[df['track_id'].isin(df_arrive['track_id'])]
-    
-    # remove ships that only has status 14 in the log alla Kristian
-    df_eta = df[df['status'] != 14]
-    df = df[df['track_id'].isin(df_eta['track_id'])]
-    df = df.sort_values(by=['track_id', 'stamp'])
+    df = clean_data(df)
     
     # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
     df['hour'] = pd.to_datetime(df['stamp']).dt.hour
@@ -183,6 +230,7 @@ if __name__ == "__main__":
     eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
     ata_ais = ata_Extract(df, track_ids[20])
 
+<<<<<<< Updated upstream
     #%%
     n = len(track_ids)
     j = 0
@@ -211,5 +259,63 @@ if __name__ == "__main__":
                 difference[j, i] = TimeDifference(time_1, time_2)
                 j+=1
                 i+=1
+=======
+#%%
+n = len(track_ids)
+j = 0
+trip_lengths = np.zeros(n)
+for track_id in track_ids:
+    tmp = 0
+    days = Day_trackid(df, track_id)
+    for day in days:
+        hours = Hour_trackid(df, track_id, day)
+        tmp += len(hours)
+    trip_lengths[j] = tmp
+    j+=1
+
+#%%
+longest_trip = int(np.max(trip_lengths))
+difference_ais = np.zeros((n, longest_trip))
+difference_erp = np.zeros((n, longest_trip))
+
+for track_id in track_ids:
+    j = 0
+    i = 0
+    ata = ata_Extract(df, track_id)
+    days = Day_trackid(df, track_id)
+    for day in days:
+        hours = Hour_trackid(df, track_id, day)
+        for hour in hours:
+            eta_erp, eta_ais = eta_Extract(df, hour, day, track_id)
+            if len(eta_erp) != 0:
+                for eta in eta_erp:
+                    difference_erp[j, i] += TimeDifference(eta_erp, ata_ais[0])(len(eta_erp))
+            if len(eta_ais) !=0:
+                for eta in eta_erp:
+                    difference_ais[j, i] += TimeDifference(eta_ais, ata_ais[0])(len(eta_ais))
+            j+=1
+            i+=1
+            
+#%%Normalising
+
+>>>>>>> Stashed changes
 
 
+
+#%%
+# time = [i for i in range(527)]
+# tickets = [i*3 for i in range(int(np.floor(527/3)))]
+# plt.style.use('seaborn-darkgrid')
+# fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
+# ax[0].bar(hours, difference_ais)
+# ax[1].bar(hours, difference_erp)
+# ax[0].set_title("Eta_ais")
+# ax[1].set_title("Eta_erp")
+# ax[0].set_xlabel("Hour")
+# ax[1].set_xlabel("Hour")
+# ax[0].set_ylabel("Absolute time difference")
+# ax[0].set_xticks(tickets)
+# ax[1].set_xticks(tickets)
+# fig.subplots_adjust(hspace=0.1, wspace=0.1)
+# plt.savefig("Maritime/figures/hourlydiff.pdf")
+# plt.show()
