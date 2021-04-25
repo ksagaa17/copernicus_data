@@ -19,8 +19,6 @@ df['hour'] = pd.to_datetime(df['stamp']).dt.hour
 df['day'] = pd.to_datetime(df['stamp']).dt.day
 track_ids = df.track_id.unique()
     
-
-
 #%% Trip lengths
 n = len(track_ids)
 j = 0
@@ -52,10 +50,10 @@ for track_id in track_ids:
             l = len(eta_ais)
             if k != 0:
                 for eta in eta_erp:
-                    difference_erp[j, i] += tf.TimeDifference(eta, ata[0])/k
+                    difference_erp[j, i] += tf.TimeDifference(ata[0], eta)/k
             if l !=0:
                 for eta in eta_ais:
-                    difference_ais[j, i] += tf.TimeDifference(eta, ata[0])/l        
+                    difference_ais[j, i] += tf.TimeDifference(ata[0], eta)/l        
             i+=1
     j+=1        
             
