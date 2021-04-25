@@ -258,8 +258,8 @@ longest_trip = int(np.max(trip_lengths))
 difference_ais = np.zeros((n, longest_trip))
 difference_erp = np.zeros((n, longest_trip))
 
+j = 0
 for track_id in track_ids:
-    j = 0
     i = 0
     ata = ata_Extract(df, track_id)
     days = Day_trackid(df, track_id)
@@ -274,31 +274,31 @@ for track_id in track_ids:
                     difference_erp[j, i] += TimeDifference(eta, ata_ais[0])/k
             if l !=0:
                 for eta in eta_ais:
-                    difference_ais[j, i] += TimeDifference(eta, ata_ais[0])/l
-            j+=1
+                    difference_ais[j, i] += TimeDifference(eta, ata_ais[0])/l        
             i+=1
+    j+=1        
             
 #%% Meaning
-mean_ais = np.zeros(n)
-mean_erp = np.zeros(n)
+mean_ais = np.zeros(longest_trip)
+mean_erp = np.zeros(longest_trip)
 for i in range(longest_trip):
-    mean_erp[i] = np.sum(difference_erp[:,i])/(np.count_nonzero(difference_erp[:,i]))
-    mean_ais[i] = np.sum(difference_ais[:,i])/(np.count_nonzero(difference_ais[:,i]))
+    mean_erp[i] = np.sum(difference_erp[:,i], axis = 1)/(np.count_nonzero(difference_erp[:,i]))
+    mean_ais[i] = np.sum(difference_ais[:,i], axis = 1)/(np.count_nonzero(difference_ais[:,i]))
     
 #%% Plotting
-time = [i for i in range(527)]
-tickets = [i*3 for i in range(int(np.floor(527/3)))]
-plt.style.use('seaborn-darkgrid')
-fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
-ax[0].bar(hours, mean_ais)
-ax[1].bar(hours, mean_erp)
-ax[0].set_title("Eta_ais")
-ax[1].set_title("Eta_erp")
-ax[0].set_xlabel("Hour")
-ax[1].set_xlabel("Hour")
-ax[0].set_ylabel("Absolute time difference")
-ax[0].set_xticks(tickets)
-ax[1].set_xticks(tickets)
-fig.subplots_adjust(hspace=0.1, wspace=0.1)
-plt.savefig("Maritime/figures/hourlydiff.pdf")
-plt.show()
+# time = [i for i in range(432)]
+# tickets = [i*3 for i in range(int(np.floor(432/3)))]
+# plt.style.use('seaborn-darkgrid')
+# fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8,4))
+# ax[0].bar(time, mean_ais)
+# ax[1].bar(time, mean_erp)
+# ax[0].set_title("Eta_ais")
+# ax[1].set_title("Eta_erp")
+# ax[0].set_xlabel("Hour")
+# ax[1].set_xlabel("Hour")
+# ax[0].set_ylabel("Absolute time difference")
+# ax[0].set_xticks(tickets)
+# ax[1].set_xticks(tickets)
+# fig.subplots_adjust(hspace=0.1, wspace=0.1)
+# plt.savefig("Maritime/figures/hourlydiff.pdf")
+# plt.show()
