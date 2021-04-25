@@ -19,9 +19,9 @@ def eta_extract_with_time(df, track_id):
     
     df = df[df['track_id'] == track_id]
     
-    eta_erp = df['eta_erp'].astype(str)
-    eta_ais = df['eta_ais'].astype(str)
-    stamp = df['stamp']
+    eta_erp = df['eta_erp'].to_numpy().astype(str)
+    eta_ais = df['eta_ais'].to_numpy().astype(str)
+    stamp = df['stamp'].to_numpy()
     
     idx = np.where((eta_erp != 'nan') & (eta_ais != 'nan'))
     

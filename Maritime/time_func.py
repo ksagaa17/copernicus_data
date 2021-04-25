@@ -183,33 +183,33 @@ if __name__ == "__main__":
     eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
     ata_ais = ata_Extract(df, track_ids[20])
 
-#%%
-n = len(track_ids)
-j = 0
-trip_lengths = np.zeros(n)
-for track_id in track_ids:
-    tmp = 0
-    days = Day_trackid(df, track_id)
-    for day in days:
-        hours = Hour_trackid(df, track_id, day)
-        tmp += len(hours)
-        trip_lengths[j] = tmp
-        j+=1
-
-#%%
-longest_trip = int(np.max(trip_lengths))
-difference = np.zeros((n, longest_trip))
-
-j = 0
-i = 0
-for track_id in track_ids:
-    days = Day_trackid(df, track_id)
-    for day in days:
-        hours = Hour_trackid(df, track_id, day)
-        for hour in hours:
-            
-            difference[j, i] = TimeDifference(time_1, time_2)
+    #%%
+    n = len(track_ids)
+    j = 0
+    trip_lengths = np.zeros(n)
+    for track_id in track_ids:
+        tmp = 0
+        days = Day_trackid(df, track_id)
+        for day in days:
+            hours = Hour_trackid(df, track_id, day)
+            tmp += len(hours)
+            trip_lengths[j] = tmp
             j+=1
-            i+=1
+
+    #%%
+    longest_trip = int(np.max(trip_lengths))
+    difference = np.zeros((n, longest_trip))
+    
+    j = 0
+    i = 0
+    for track_id in track_ids:
+        days = Day_trackid(df, track_id)
+        for day in days:
+            hours = Hour_trackid(df, track_id, day)
+            for hour in hours:
+                
+                difference[j, i] = TimeDifference(time_1, time_2)
+                j+=1
+                i+=1
 
 
