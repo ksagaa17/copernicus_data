@@ -27,6 +27,9 @@ def clean_data(df):
         Cleaned log.
 
     """
+    # remove rows with status 16
+    df = df[df['status'] != 16]
+    
     # remove ships that has not arrived
     df_arrive = df[df['status'] == 14]
     df = df[df['track_id'].isin(df_arrive['track_id'])]
@@ -52,9 +55,6 @@ def clean_data(df):
     a = status != 14
     b = np.roll(a, 1)
     df = df[a+b]
-    
-    # remove rows with status 16
-    df = df[df['status'] != 16]
     
     # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
     # df['hour'] = pd.to_datetime(df['stamp']).dt.hour

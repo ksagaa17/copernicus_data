@@ -77,13 +77,17 @@ if __name__ == "__main__":
     df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
                   'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
     
-    df = clean.clean_data(df)
+    mae_ais, std_ais, mae_erp, std_erp = grand_error(df, plot_hist=True)
     
-    track_ids = df.track_id.unique()
+    
+    
+    # df = clean.clean_data(df)
+    
+    # track_ids = df.track_id.unique()
     
     # liste = []
     # for tr in track_ids:
     #     liste.append(len(tf.ata_Extract(df, tr)))
     
-    mae_ais, std_ais, mae_erp, std_erp = grand_error(df, plot_hist=True)
+    
 
