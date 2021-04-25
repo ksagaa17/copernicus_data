@@ -4,6 +4,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+
 #%%
 def clean_data(df):
     """
@@ -22,8 +23,8 @@ def clean_data(df):
     -------
     df : pandas dataframe
         Cleaned log.
-
     """
+    
     # remove ships that has not arrived
     df_arrive = df[df['status'] == 14]
     df = df[df['track_id'].isin(df_arrive['track_id'])]
@@ -91,7 +92,6 @@ def Day_trackid(df, track_id):
     -------
     days : ndarray 
         days related to the track_id.
-
     """
     
     indexes = df.query('track_id == {0}'.format(track_id)).index
@@ -116,7 +116,6 @@ def Hour_trackid(df, track_id, day):
     -------
     hours : ndarray 
         hours related to the track_id for the given day.
-
     """
     
     indexes = df.query('track_id == {0} & day == {1}'.format(track_id, day)).index
@@ -151,7 +150,23 @@ def ata_Extract(df, track_id, status = 14):
 def eta_Extract(df, hour, day, track_id):
     """
     Extracts the eta_erp and eta_ais at a given time and track_id for a dataframe
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    hour : int
+        An hour containing data from the track_id
+    day : int
+        A day containing data from the track_id
+    track_id : int
+        A track_id from df.
 
+    Returns
+    -------
+    eta_erp : ndarray
+        eta_erp for the given track_id.
+    eta_ais : ndarray
+        eta_ais for the given track_id.
     """
     
     indexes = df.query('hour == {0} & day == {1} & track_id == {2}'.format(hour, day, track_id)).index
@@ -184,8 +199,8 @@ def eta_Extract_whole_track(df, track_id):
         eta_erp for the given track_id.
     eta_ais : ndarray
         eta_ais for the given track_id.
-
     """
+    
     indexes = df.query('track_id == {0}'.format(track_id)).index
     eta_erp = df['eta_erp'][indexes]
     eta_ais = df['eta_ais'][indexes]
