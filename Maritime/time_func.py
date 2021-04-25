@@ -108,15 +108,14 @@ def eta_Extract(df, hour, day, track_id):
     eta_erp = df['eta_erp'][indexes]
     eta_ais = df['eta_ais'][indexes]
     
-    eta_erp = eta_erp.unique()  
-    eta_ais = eta_ais.unique()
-
-    eta_erp = eta_erp[np.logical_not(np.isnan(eta_erp))]
-    eta_ais = eta_ais[np.logical_not(np.isnan(eta_ais))]
+    eta_erp = eta_erp.unique().astype(str)
+    eta_ais = eta_ais.unique().astype(str)
+    
+    eta_erp = eta_erp[eta_erp != 'nan']
+    eta_ais = eta_ais[eta_ais != 'nan']
     return eta_erp, eta_ais
 
 
-<<<<<<< Updated upstream
 def eta_Extract_whole_track(df, track_id):
     """
     Extracts the eta_erp and eta_ais for a given track_id for a dataframe. 
@@ -150,7 +149,6 @@ def eta_Extract_whole_track(df, track_id):
 
 
 if __name__ == "__main__":
-    #%%
     # Load data
     pardir = os.path.dirname(os.getcwd())
     df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
@@ -184,44 +182,18 @@ if __name__ == "__main__":
     # Test time extract
     eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
     ata_ais = ata_Extract(df, track_ids[20])
-=======
+
 #%%
-# Load data
-pardir = os.path.dirname(os.getcwd())
-df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
-df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
-              'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
-
-#Cleaning
-# remove ships that has not arrived alla Kristian
-df_arrive = df[df['status'] == 14]
-df = df[df['track_id'].isin(df_arrive['track_id'])]
-
-# remove ships that only has status 14 in the log alla Kristian
-df_eta = df[df['status'] != 14]
-df = df[df['track_id'].isin(df_eta['track_id'])]
-df = df.sort_values(by=['track_id', 'stamp'])
-
-# Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
-df['hour'] = pd.to_datetime(df['stamp']).dt.hour
-df['day'] = pd.to_datetime(df['stamp']).dt.day
-
-#Test time Difference
-time_1 = "2021-03-16 17:02:28"
-time_2 = "2021-03-18 10:14:55"
-sek_diff = TimeDifference(time_1, time_2)
-
-#Test day_trackid og hour_track_id
-track_ids = df.track_id.unique()
-days = Day_trackid(df, 4359391821106)
-hours = Hour_trackid(df, 4359391821106, 1)
-
-# Test time extract
-eta_erp, eta_ais = eta_Extract(df, 8, 1, 4359391821106)
-ata_ais = ata_Extract(df, track_ids[0])
-
+n = len(track_ids)
 j = 0
+trip_lengths = np.zeros(n)
 for track_id in track_ids:
     j+=1
+    tmp = 0
+    days = Day_trackid(df, track_id)
+    for day in days:
+        hours = Hour_trackid(df, track_id, day)
+        tmp += len(hours)
+        trip_lengths[j] = tmp
 
->>>>>>> Stashed changes
+#%%
