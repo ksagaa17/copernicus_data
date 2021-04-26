@@ -23,6 +23,8 @@ def clean_data(df):
     df : pandas dataframe
         Cleaned log.
     """
+    # remove rows with status 16
+    df = df[df['status'] != 16]
     
     # remove ships that has not arrived
     df_arrive = df[df['status'] == 14]
@@ -49,8 +51,7 @@ def clean_data(df):
     b = np.roll(a, 1)
     df = df[a+b]
     
-    # remove rows with status 16
-    df = df[df['status'] != 16]
+    
     return df
 
 
