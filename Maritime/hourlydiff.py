@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import time_func as tf
+import utillities as util
 
 
 #%%
@@ -12,7 +12,7 @@ df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", 
 df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
               'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
     
-df = tf.clean_data(df)
+df = util.clean_data(df)
     
 # Tilføjet day og hour for jeg tænkte vi kunne bruge det til at kategorisere dataen.
 df['hour'] = pd.to_datetime(df['stamp']).dt.hour
@@ -25,9 +25,9 @@ j = 0
 trip_lengths = np.zeros(n)
 for track_id in track_ids:
     tmp = 0
-    days = tf.Day_trackid(df, track_id)
+    days = util.Day_trackid(df, track_id)
     for day in days:
-        hours = tf.Hour_trackid(df, track_id, day)
+        hours = util.Hour_trackid(df, track_id, day)
         tmp += len(hours)
     trip_lengths[j] = tmp
     j+=1
@@ -40,20 +40,20 @@ difference_erp = np.zeros((n, longest_trip))
 j = 0
 for track_id in track_ids:
     i = 0
-    ata = tf.ata_Extract(df, track_id)
-    days = tf.Day_trackid(df, track_id)
+    ata = util.ata_Extract(df, track_id)
+    days = util.Day_trackid(df, track_id)
     for day in days:
-        hours = tf.Hour_trackid(df, track_id, day)
+        hours = util.Hour_trackid(df, track_id, day)
         for hour in hours:
-            eta_erp, eta_ais = tf.eta_Extract(df, hour, day, track_id)
+            eta_erp, eta_ais = util.eta_Extract(df, hour, day, track_id)
             k = len(eta_erp)
             l = len(eta_ais)
             if k != 0:
                 for eta in eta_erp:
-                    difference_erp[j, i] += tf.TimeDifference(ata[0], eta)/k
+                    difference_erp[j, i] += util.TimeDifference(ata[0], eta)/k
             if l !=0:
                 for eta in eta_ais:
-                    difference_ais[j, i] += tf.TimeDifference(ata[0], eta)/l        
+                    difference_ais[j, i] += util.TimeDifference(ata[0], eta)/l        
             i+=1
     j+=1        
             

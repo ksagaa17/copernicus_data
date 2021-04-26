@@ -9,8 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import time_func as tf
-import extract_function as clean
+import utillities as util
 from datetime import datetime
 
 def eta_extract_with_time(df, track_id):
@@ -31,7 +30,7 @@ def eta_extract_with_time(df, track_id):
 
 def plot_eta_track(df, track_id):
     eta_erp, eta_ais, stamp = eta_extract_with_time(df, track_id)
-    ata_ais = tf.ata_Extract(df, track_id)[0]
+    ata_ais = util.ata_Extract(df, track_id)[0]
     
     FMT = '%Y-%m-%d %H:%M:%S'
     stamp_list = []
@@ -77,7 +76,7 @@ df = pd.read_csv("data/tbl_ship_arrivals_log_202103.log", sep = "|", header=None
 df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
               'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
 
-df = clean.clean_data(df)
+df = util.clean_data(df)
 track_ids = df.track_id.unique()
 
 for track_id in track_ids[:100]:

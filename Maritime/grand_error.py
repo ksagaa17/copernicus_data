@@ -7,8 +7,7 @@ Created on Sat Apr 24 13:53:04 2021
 
 import numpy as np
 import pandas as pd
-import time_func as tf
-import extract_function as clean
+import utillities as util
 import matplotlib.pyplot as plt
 
 def grand_error(df, percent=1, plot_hist=False):
@@ -43,18 +42,18 @@ def grand_error(df, percent=1, plot_hist=False):
     abs_error_erp = np.array([])
     abs_error_ais = np.array([])
     for track_id in track_ids:
-        ata_ais = tf.ata_Extract(df, track_id)[0]
-        eta_erp, eta_ais = tf.eta_Extract_whole_track(df, track_id)
+        ata_ais = util.ata_Extract(df, track_id)[0]
+        eta_erp, eta_ais = util.eta_Extract_whole_track(df, track_id)
         
         time_diff = []
         for eta in eta_erp:
-            time_diff.append(tf.TimeDifference(eta,ata_ais))
+            time_diff.append(util.TimeDifference(eta,ata_ais))
         
         abs_error_erp = np.concatenate((abs_error_erp, np.array(time_diff)))
         
         time_diff = []
         for eta in eta_ais:
-            time_diff.append(tf.TimeDifference(eta,ata_ais))
+            time_diff.append(util.TimeDifference(eta,ata_ais))
         
         abs_error_ais = np.concatenate((abs_error_ais, np.array(time_diff)))
         
@@ -91,7 +90,7 @@ if __name__ == "__main__":
     df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
                   'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
 
-    df = clean.clean_data(df)
+    df = util.clean_data(df)
 
     mae_ais, std_ais, mae_erp, std_erp = grand_error(df, percent=0.5, plot_hist=False)
     
