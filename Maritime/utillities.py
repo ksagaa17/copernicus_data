@@ -73,7 +73,7 @@ def TimeDifference(time_1,time_2):
     FMT = '%Y-%m-%d %H:%M:%S'
     tdelta = datetime.strptime(time_1, FMT) - datetime.strptime(time_2, FMT)
     sek_diff = tdelta.days * 24 * 3600 + tdelta.seconds
-    return sek_diff
+    return abs(sek_diff)
 
 
 def Day_trackid(df, track_id):
