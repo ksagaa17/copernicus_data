@@ -1,13 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 26 17:46:20 2021
-
-@author: krist
-"""
-
 import pandas as pd
 from datetime import datetime
 import numpy as np
+
 
 def clean_data(df):
     """
@@ -215,6 +209,7 @@ def eta_Extract_whole_track(df, track_id):
     eta_erp = eta_erp[eta_erp != 'nan']
     eta_ais = eta_ais[eta_ais != 'nan']
     return eta_erp, eta_ais
+
 
 def add_hours_bef_arr(df):
     """
