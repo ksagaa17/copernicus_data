@@ -108,11 +108,11 @@ for i in range(points):
 
 #%%
 time = np.linspace(0, np.max(max_hours), points)
-
 fig, ax = plt.subplots()
-ax.plot(time, mean_erp/(120*24), label='eta_erp')
-ax.plot(time, mean_ais/(120*24), label='eta_ais')
+ax.plot(time, mean_erp/(60*60), label='eta_erp')
+ax.plot(time, mean_ais/(60*60), label='eta_ais')
 ax.invert_xaxis()
-ax.set_ylabel("Absolute error in days")
+ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
+plt.savefig("figures/hourlydiff_new")
 plt.show()
