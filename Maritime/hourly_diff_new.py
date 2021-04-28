@@ -94,14 +94,14 @@ for i in range(n):
        l = len(ais)
        if k != 0:
            for n in range(k):
-               erp_est[i, j] += ut.TimeDifference(erp[n], ata_ais[0])
-       else:
-           erp_est[i, j] = erp_est[i-1, j]
+               erp_est[i, j] += ut.TimeDifference(erp[n], ata_ais[0])/k
+       # else:
+       #     erp_est[i, j] = erp_est[i-1, j]
        if l != 0:
            for n in range(l):
-               ais_est[i, j] += ut.TimeDifference(ais[n], ata_ais[0])
-       else:
-           ais_est[i, j] = ais_est[i-1, j]
+               ais_est[i, j] += ut.TimeDifference(ais[n], ata_ais[0])/l
+       # else:
+       #     ais_est[i, j] = ais_est[i-1, j]
 
 
 mean_ais = np.zeros(points)
@@ -110,7 +110,7 @@ for i in range(points):
     mean_erp[i] = np.sum(erp_est[:,i])/(np.count_nonzero(erp_est[:,i]))
     mean_ais[i] = np.sum(ais_est[:,i])/(np.count_nonzero(ais_est[:,i]))
 
-
-plt.plot(mean_ais)
-plt.plot(mean_erp)
+#%%
+plt.plot(mean_ais/(120))
+plt.plot(mean_erp/(120))
 plt.show()
