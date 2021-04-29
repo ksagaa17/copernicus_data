@@ -406,3 +406,59 @@ def data_prepocessing(df):
     df['erp_bef_ata'] = erp_bef_ata
     df['ais_bef_erp'] = ais_bef_erp
     return df
+
+
+def Extract_time_brackets(df, time_low, time_high, track_id):
+    """
+    Extracts the eta_erp and eta_ais at a given time frame and track_id
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    time_low : int
+        time before arrival lower bound
+    time_high : int
+        time before arrival upper bound
+    track_id : int
+        A track_id from df.
+
+    Returns
+    -------
+    eta_erp : ndarray
+        eta_erp for the given track_id.
+    eta_ais : ndarray
+        eta_ais for the given track_id.
+    """
+    
+    indexes = df.query('hours_bef_arr >= {0} & hours_bef_arr < {1} & track_id == {2}'.format(time_low, time_high, track_id)).index
+    eta_erp = df['eta_erp'][indexes]
+    eta_ais = df['eta_ais'][indexes]
+    
+    eta_erp = eta_erp.astype(str).to_numpy()
+    eta_ais = eta_ais.astype(str).to_numpy()
+    
+    eta_erp = eta_erp[eta_erp != 'nan']
+    eta_ais = eta_ais[eta_ais != 'nan']
+    return eta_erp, eta_ais
+
+
+def max_hour(df, track_id):
+    """
+    Extracts the eta_erp and eta_ais at a given time frame and track_id
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    track_id : int
+        A track_id from df.
+
+    Returns
+    -------
+    max_hour : int
+        maximum hour before arrvival.
+    """
+    
+    indexes = df.query('track_id == {0}'.format(track_id)).index
+    hours_before = df['hours_bef_arr'][indexes]
+    max_hours = hours_before.max()
+    return max_hours
