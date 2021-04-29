@@ -109,10 +109,12 @@ for i in range(points):
 #%%
 time = np.linspace(0, np.max(max_hours), points)
 fig, ax = plt.subplots()
+plt.style.use('seaborn-darkgrid')
 ax.plot(time, mean_erp/(60*60), label='eta_erp')
 ax.plot(time, mean_ais/(60*60), label='eta_ais')
 ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
+plt.legend(["eta_erp","eta_ais"])
 plt.savefig("figures/hourlydiff_new")
 plt.show()
