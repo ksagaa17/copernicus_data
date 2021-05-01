@@ -29,8 +29,8 @@ bracketwidth = 5
 
 # Maximum amount of points
 points = int(np.ceil(np.max(max_hours)/bracketwidth)+1) 
-erp_est = np.zeros((n, points))
-ais_est = np.zeros((n, points))
+erp_est_pct = np.zeros((n, points))
+ais_est_pct = np.zeros((n, points))
 
 # Creates matrix of time differences
 for i in range(n):
@@ -38,6 +38,8 @@ for i in range(n):
    time_low = 0 
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
+   time_1 = '0000-01-01 00:00:00' 
+   denom = ut.TimeDifference(time_1, ata_ais)
    for j in range(length):
        erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i])
        time_low += bracketwidth
@@ -46,17 +48,17 @@ for i in range(n):
        l = len(ais)
        if k != 0: 
            for n in range(k):
-               erp_est[i, j] += ut.TimeDifference(erp[n], ata_ais)/k 
+               erp_est_pct[i, j] += 100*ut.TimeDifference(erp[n], ata_ais)/(k*denom) 
        if l != 0:
            for n in range(l):
-               ais_est[i, j] += ut.TimeDifference(ais[n], ata_ais)/l 
+               ais_est_pct[i, j] += 100*ut.TimeDifference(ais[n], ata_ais)/(l*denom) 
 
 # Sum points in the same times and means
 mean_ais = np.zeros(points)
 mean_erp = np.zeros(points)
 for i in range(points):
-    mean_erp[i] = np.sum(erp_est[:,i])/(np.count_nonzero(erp_est[:,i])) 
-    mean_ais[i] = np.sum(ais_est[:,i])/(np.count_nonzero(ais_est[:,i])) 
+    mean_erp[i] = np.sum(erp_est_pct[:,i])/(np.count_nonzero(erp_est_pct[:,i])) 
+    mean_ais[i] = np.sum(ais_est_pct[:,i])/(np.count_nonzero(ais_est_pct[:,i])) 
 
 #%% Plotting
 zoom = points
@@ -78,5 +80,3 @@ ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
 plt.savefig("figures/hourlydiff_new_{0}".format(zoom))
 plt.show()
-
-
