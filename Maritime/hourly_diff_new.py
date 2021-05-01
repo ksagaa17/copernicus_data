@@ -14,6 +14,8 @@ df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
               'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
 df = ut.clean_data(df)
 df = ut.add_hours_bef_arr(df)
+df = ut.erp_before_ata(df) # remove if you use for all
+df = ut.ais_before_erp(df) # remove if you use for all
 
 # Determines the track id's and amount of track id's
 track_ids = df.track_id.unique()
@@ -39,7 +41,9 @@ for i in range(n):
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
    for j in range(length):
-       erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i])
+       #erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i]) # for all
+       erp = ut.Extract_time_brackets_erp(df, time_low, time_high, track_ids[i]) 
+       ais = ut.Extract_ais_specific(df, time_low, time_high, track_ids[i])
        time_low += bracketwidth
        time_high += bracketwidth
        k = len(erp)

@@ -28,17 +28,17 @@ for i in range(n):
 bracketwidth = 5
 
 # Maximum amount of points
-points = int(np.ceil(np.max(max_hours)/bracketwidth)+1) 
+points = int(np.ceil(np.max(max_hours)/bracketwidth) + 1) 
 erp_est_pct = np.zeros((n, points))
 ais_est_pct = np.zeros((n, points))
 
 # Creates matrix of time differences
 for i in range(n):
-   length = int(np.ceil(max_hours[i]/bracketwidth)+1)
+   length = int(np.ceil(max_hours[i]/bracketwidth) + 1)
    time_low = 0 
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
-   time_1 = '0000-01-01 00:00:00' 
+   time_1 = '0001-01-01 00:00:00' 
    denom = ut.TimeDifference(time_1, ata_ais)
    for j in range(length):
        erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i])
