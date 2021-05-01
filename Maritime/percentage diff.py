@@ -28,13 +28,13 @@ for i in range(n):
 bracketwidth = 5
 
 # Maximum amount of points
-points = int(np.ceil(np.max(max_hours)/bracketwidth) + 1) 
+points = int(np.ceil(np.max(max_hours)/bracketwidth)+1) 
 erp_est = np.zeros((n, points))
 ais_est = np.zeros((n, points))
 
 # Creates matrix of time differences
 for i in range(n):
-   length = int(np.ceil(max_hours[i]/bracketwidth) + 1)
+   length = int(np.ceil(max_hours[i]/bracketwidth)+1)
    time_low = 0 
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
@@ -78,4 +78,5 @@ ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
 plt.savefig("figures/hourlydiff_new_{0}".format(zoom))
 plt.show()
+
 
