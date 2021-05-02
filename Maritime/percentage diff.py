@@ -65,8 +65,8 @@ percent_ais = np.zeros(points)
 percent_erp = np.zeros(points)
 
 for i in range(points-1):
-    percent_ais[i+1] = (mean_ais[i+1]-mean_ais[-1])/mean_ais[-1]
-    percent_erp[i+1] = (mean_erp[i+1]-mean_erp[-1])/mean_erp[-1]
+    percent_ais[i+1] = (mean_ais[-1]- mean_ais[i+1])/mean_ais[-1]
+    percent_erp[i+1] = (mean_erp[-1]- mean_erp[i+1])/mean_erp[-1]
 
 
 #%% Plotting
