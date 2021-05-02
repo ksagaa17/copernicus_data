@@ -65,8 +65,8 @@ percent_ais = np.zeros(points)
 percent_erp = np.zeros(points)
 
 for i in range(points-1):
-    percent_ais[i+1] = (mean_ais[i]-mean_ais[i-1])/mean_ais[i]
-    percent_erp[i+1] = (mean_erp[i]-mean_erp[i-1])/mean_erp[i]
+    percent_ais[i+1] = (mean_ais[i+1]-mean_ais[-1])/mean_ais[-1]
+    percent_erp[i+1] = (mean_erp[i+1]-mean_erp[-1])/mean_erp[-1]
 
 
 #%% Plotting
@@ -89,3 +89,22 @@ ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
 plt.savefig("figures/hourlydiff_new_{0}".format(zoom))
 plt.show()
+
+#%%
+zoom = points
+fig, ax = plt.subplots()
+plt.style.use('seaborn-darkgrid')
+ax.plot(x_ticks[1:zoom], percent_erp[1:zoom], label = 'eta_erp')
+ax.plot(x_ticks[1:zoom], percent_ais[1:zoom], label = 'eta_ais')
+ax.xaxis.set_major_locator(mticker.MaxNLocator(6))
+ax.invert_xaxis()
+ax.set_ylabel("Percentage improvement")
+ax.set_xlabel('Hours before arrival')
+plt.legend(["eta_erp","eta_ais"])
+plt.savefig("figures/percent_improvement{0}".format(zoom))
+plt.show()
+
+
+
+
+
