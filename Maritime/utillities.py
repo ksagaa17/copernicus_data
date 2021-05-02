@@ -75,6 +75,36 @@ def TimeDifference(time_1,time_2):
     return abs(sek_diff)
 
 
+def time_difference_array(time1, time2):
+    """
+    Computes the absolute difference between two arrays of datetimes and 
+    returns an array absolute differences in seconds.
+
+    Parameters
+    ----------
+    time1 : ndarray, datetime64 or str
+        Array of datetimes.
+    time2 : ndarray, datetime64 or str
+        Array of datetimes. Must have length 1 or len(time1).
+
+    Returns
+    -------
+    time1 : ndarray, timedelta64[s]
+        Array of time differences in seconds.
+
+    """
+    time1 = time1.astype('datetime64[s]')
+    time2 = time2.astype('datetime64[s]')
+    
+    try:
+        diff = np.abs(time1 - time2)
+        return(diff)
+    
+    except ValueError:
+        print("time2 must either have same length as time1 or have a length of 1. " +
+              "time2 has length {}".format(len(time2)))
+
+
 def Day_trackid(df, track_id):
     """
     Extracts days for a given track_id of a dataframe
