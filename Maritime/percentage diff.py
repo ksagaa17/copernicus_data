@@ -38,8 +38,8 @@ for i in range(n):
    time_low = 0 
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
-   time_1 = '0001-01-01 00:00:00' 
-   denom = ut.TimeDifference(time_1, ata_ais)
+   #time_1 = '0001-01-01 00:00:00' 
+   #denom = ut.TimeDifference(time_1, ata_ais)
    for j in range(length):
        erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i])
        time_low += bracketwidth
@@ -48,10 +48,10 @@ for i in range(n):
        l = len(ais)
        if k != 0: 
            for n in range(k):
-               erp_est_pct[i, j] += 100*ut.TimeDifference(erp[n], ata_ais)/(k*denom) 
+               erp_est_pct[i, j] += ut.TimeDifference(erp[n], ata_ais)/k 
        if l != 0:
            for n in range(l):
-               ais_est_pct[i, j] += 100*ut.TimeDifference(ais[n], ata_ais)/(l*denom) 
+               ais_est_pct[i, j] += ut.TimeDifference(ais[n], ata_ais)/l 
 
 # Sum points in the same times and means
 mean_ais = np.zeros(points)
@@ -59,6 +59,15 @@ mean_erp = np.zeros(points)
 for i in range(points):
     mean_erp[i] = np.sum(erp_est_pct[:,i])/(np.count_nonzero(erp_est_pct[:,i])) 
     mean_ais[i] = np.sum(ais_est_pct[:,i])/(np.count_nonzero(ais_est_pct[:,i])) 
+
+    
+percent_ais = np.zeros(points)
+percent_erp = np.zeros(points)
+
+for i in range(points-1):
+    percent_ais[i+1] = (mean_ais[i]-mean_ais[i-1])/mean_ais[i]
+    percent_erp[i+1] = (mean_erp[i]-mean_erp[i-1])/mean_erp[i]
+
 
 #%% Plotting
 zoom = points
