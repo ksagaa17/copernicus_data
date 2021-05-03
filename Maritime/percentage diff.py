@@ -38,10 +38,10 @@ for i in range(n):
    time_low = 0 
    time_high = bracketwidth
    ata_ais = ut.ata_Extract(df, track_ids[i])[0]
-   #time_1 = '0001-01-01 00:00:00' 
-   #denom = ut.TimeDifference(time_1, ata_ais)
    for j in range(length):
        erp, ais = ut.Extract_time_brackets(df, time_low, time_high, track_ids[i])
+       # erp = ut.Extract_time_brackets_erp(df, time_low, time_high, track_ids[i]) 
+       # ais = ut.Extract_ais_specific(df, time_low, time_high, track_ids[i])
        time_low += bracketwidth
        time_high += bracketwidth
        k = len(erp)
@@ -65,8 +65,8 @@ percent_ais = np.zeros(points)
 percent_erp = np.zeros(points)
 
 for i in range(points-1):
-    percent_ais[i+1] = (mean_ais[-1]- mean_ais[i+1])/mean_ais[-1]
-    percent_erp[i+1] = (mean_erp[-1]- mean_erp[i+1])/mean_erp[-1]
+    percent_ais[i+1] = 100*(mean_ais[-1]- mean_ais[i+1])/mean_ais[-1]
+    percent_erp[i+1] = 100*(mean_erp[-1]- mean_erp[i+1])/mean_erp[-1]
 
 
 #%% Plotting
@@ -87,7 +87,7 @@ ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
-plt.savefig("figures/hourlydiff_new_{0}".format(zoom))
+plt.savefig("figures/hourlydiff_old_{0}".format(zoom))
 plt.show()
 
 #%%
@@ -98,13 +98,8 @@ ax.plot(x_ticks[1:zoom], percent_erp[1:zoom], label = 'eta_erp')
 ax.plot(x_ticks[1:zoom], percent_ais[1:zoom], label = 'eta_ais')
 ax.xaxis.set_major_locator(mticker.MaxNLocator(6))
 ax.invert_xaxis()
-ax.set_ylabel("Percentage improvement")
+ax.set_ylabel("Percentage improvement [%]")
 ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
-plt.savefig("figures/percent_improvement{0}".format(zoom))
+plt.savefig("figures/percent_improvement_{0}".format(zoom))
 plt.show()
-
-
-
-
-
