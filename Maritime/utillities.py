@@ -366,6 +366,52 @@ def ais_before_erp(df):
     return df
 
 
+def add_eta_error(df):
+    """
+    Add columns with the absolute difference between eta_erp and ata_ais and 
+    between eta_ais and ata_ais. The difference is given in seconds.
+
+    Parameters
+    ----------
+    df :pandas dataframe
+        Log fra ETA1.
+
+    Returns
+    -------
+    df :  pandas dataframe
+         Log fra ETA1 with additional columns of eta errors.
+
+    """
+    track_ids = df.track_id.unique()
+    n = len(track_ids)
+    
+    
+    ais_diff_list = np.zeros(0)
+    erp_diff_list = np.zeros(0)
+    
+    for i in range(n):
+        ata = ata_Extract(df, track_ids[i]).astype('datetime64[s]')
+        
+        df_small = df[df["track_id"]==track_ids[i]]
+        ais = df_small["eta_ais"].to_numpy().astype(str)
+        idx = ais != 'nan'
+        ais_diff = np.ones(len(ais))*np.nan
+        ais_diff[idx] = np.abs(ata - ais[idx].astype('datetime64[s]'))
+        ais_diff_list = np.concatenate((ais_diff_list, ais_diff))
+        
+        erp = df_small["eta_erp"].to_numpy().astype(str)
+        idx = erp != 'nan'
+        erp_diff = np.ones(len(ais))*np.nan
+        erp_diff[idx] = np.abs(ata - erp[idx].astype('datetime64[s]'))
+        erp_diff_list = np.concatenate((erp_diff_list, erp_diff))
+        
+        
+    df['erp_error'] = erp_diff_list
+    df['ais_error'] = ais_diff_list
+    
+    return df
+
+
 def data_prepocessing(df):
     """
     Collection of the functionality of 

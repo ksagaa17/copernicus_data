@@ -40,29 +40,6 @@ def relative_error(df, filters, bracketwidth = 5, percent = 0.9):
     mean_erp = np.zeros(points)
     mean_ais = np.zeros(points)
     
-    ais_diff_list = np.zeros(0)
-    erp_diff_list = np.zeros(0)
-    
-    for i in range(n):
-        ata = ut.ata_Extract(df, track_ids[i]).astype('datetime64[s]')
-        
-        df_small = df_filter[df_filter["track_id"]==track_ids[i]]
-        ais = df_small["eta_ais"].to_numpy().astype(str)
-        idx = ais != 'nan'
-        ais_diff = np.ones(len(ais))*np.nan
-        ais_diff[idx] = np.abs(ata - ais[idx].astype('datetime64[s]'))
-        ais_diff_list = np.concatenate((ais_diff_list, ais_diff))
-        
-        erp = df_small["eta_erp"].to_numpy().astype(str)
-        idx = erp != 'nan'
-        erp_diff = np.ones(len(ais))*np.nan
-        erp_diff[idx] = np.abs(ata - erp[idx].astype('datetime64[s]'))
-        erp_diff_list = np.concatenate((erp_diff_list, erp_diff))
-        
-        
-    df_filter['erp_error'] = erp_diff_list
-    df_filter['ais_error'] = ais_diff_list
-    
     ### ais hourly percentage ###
     time_low = 0
     time_high = bracketwidth
@@ -160,15 +137,17 @@ if __name__ == "__main__":
     # df.to_csv("tbl_ship_arrivals_log_202103_cleaned.csv", index = False)
     
     df = pd.read_csv("data\\tbl_ship_arrivals_log_202103_cleaned.csv", low_memory=False)
+    print('df')
+    df = ut.add_eta_error(df)
     
     bracketwidth = 5
     percent = 0.9
     
-    #my_filters = {'erp_bef_ata': True}
-    my_filters = {}
-    mean_erp, mean_ais = plot_relative_error("relative_error_erp_bef_ata_T", df, 
-                                             my_filters, bracketwidth = bracketwidth, 
-                                             percent = percent)
+    my_filters = {'erp_bef_ata': False}
+    #my_filters = {}
+    mean_erp, mean_ais = plot_relative_error("relative_error_erp_bef_ata_F", df, 
+                                              my_filters, bracketwidth = bracketwidth, 
+                                              percent = percent)
     
     
     
