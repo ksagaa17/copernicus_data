@@ -141,11 +141,11 @@ if __name__ == "__main__":
     df = ut.add_eta_error(df)
     
     bracketwidth = 5
-    percent = 0.9
+    percent = 1
     
-    my_filters = {'erp_bef_ata': False}
-    #my_filters = {}
-    mean_erp, mean_ais = plot_relative_error("relative_error_erp_bef_ata_F", df, 
+    #my_filters = {'erp_bef_ata': False}
+    my_filters = {}
+    mean_erp, mean_ais = plot_relative_error("relative_error_no_filter", df, 
                                               my_filters, bracketwidth = bracketwidth, 
                                               percent = percent)
     
