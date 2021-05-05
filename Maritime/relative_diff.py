@@ -116,7 +116,7 @@ def plot_relative_error(figname, df, filters, bracketwidth = 5, percent = 0.9, z
     ax.set_ylabel("Relative mean absolute error")
     ax.set_xlabel('Hours before arrival')
     plt.legend()
-    plt.savefig("figures/relative/"+ figname + "{0}_{1}".format(int(100*percent), zoom))
+    plt.savefig("figures/relative/"+ figname + "{0}".format(int(100*percent)))
     plt.show()
     
     if returns == True:
@@ -141,11 +141,11 @@ if __name__ == "__main__":
     df = ut.add_eta_error(df)
     
     bracketwidth = 5
-    percent = 1
+    percent = 0.9
     
-    #my_filters = {'erp_bef_ata': False}
+    my_filters = {'erp_bef_ata': True, 'ais_bef_erp': False}
     my_filters = {}
-    mean_erp, mean_ais = plot_relative_error("relative_error_no_filter", df, 
+    mean_erp, mean_ais = plot_relative_error("relative_err_erp_bef_ata_T_ais_bef_erp_F", df, 
                                               my_filters, bracketwidth = bracketwidth, 
                                               percent = percent)
     
