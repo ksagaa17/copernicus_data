@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
-#%%
+
 def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
     """
     Extracts the eta_erp and eta_ais for a given track_id for a dataframe. 
@@ -103,6 +103,7 @@ def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
             mean_ais[i] = np.sum(ais_est[:,i])/(np.count_nonzero(ais_est[:,i])) 
     
     return mean_erp, mean_ais
+
 
 #%% 
 pardir = os.path.dirname(os.getcwd())
