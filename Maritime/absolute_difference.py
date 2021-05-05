@@ -105,7 +105,7 @@ def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
     return mean_erp, mean_ais
 
 
-#%% 
+#%% Absolute Difference
 pardir = os.path.dirname(os.getcwd())
 df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
 # df = pd.read_csv("Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
@@ -119,7 +119,7 @@ track_ids = df.track_id.unique()
 bracketwidth = 5 
 mean_erp, mean_ais = absolute_error(track_ids, df, bracketwidth, cleaned = True)
 
-#%% plotting
+#%% Plotting
 total_points = len(mean_erp)
 zoom = total_points
 x_ticks = []
