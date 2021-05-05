@@ -31,7 +31,7 @@ def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
     Contains the mean absolute time difference for the eta_ais
     """
     
-    print("Warning this function has yet to be optimised and is slow so grab a cup of coffe or a snack")
+    print("Warning this function has yet to be optimised so grab a cup of coffe or a snack")
     n = len(track_ids)
     # Determining the maximum amount of hours away we have data for
     max_hours = np.zeros(n)
