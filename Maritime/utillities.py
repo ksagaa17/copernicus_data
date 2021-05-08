@@ -263,7 +263,7 @@ def add_hours_bef_arr(df):
         df_small = df.loc[df['track_id']==track_id]
         stamp = df_small['stamp'].to_numpy().astype('datetime64[s]')
         ata = ata_Extract(df, track_id, status = 14).astype('datetime64[s]')
-        diff = (ata - stamp).astype('timedelta64[h]')
+        diff = (ata[:1] - stamp).astype('timedelta64[h]')
         hours_bef_arrive = np.concatenate((hours_bef_arrive,diff.astype(int)))
     
     df['hours_bef_arr'] = hours_bef_arrive
@@ -321,7 +321,7 @@ def erp_before_ata(df):
         else:
             ata = ata_Extract(df, track_id, status = 14).astype('datetime64[s]')
             erp = df_small['eta_erp'].to_numpy().astype('datetime64[s]')
-            erp_bef_ata_id = erp <= ata
+            erp_bef_ata_id = erp <= ata[:1]
             erp_bef_ata = np.concatenate((erp_bef_ata, erp_bef_ata_id))
 
     df['erp_bef_ata'] = erp_bef_ata
@@ -398,13 +398,13 @@ def add_eta_error(df):
         ais = df_small["eta_ais"].to_numpy().astype(str)
         idx = ais != 'nan'
         ais_diff = np.ones(len(ais))*np.nan
-        ais_diff[idx] = np.abs(ata - ais[idx].astype('datetime64[s]'))
+        ais_diff[idx] = np.abs(ata[:1] - ais[idx].astype('datetime64[s]'))
         ais_diff_list = np.concatenate((ais_diff_list, ais_diff))
         
         erp = df_small["eta_erp"].to_numpy().astype(str)
         idx = erp != 'nan'
         erp_diff = np.ones(len(ais))*np.nan
-        erp_diff[idx] = np.abs(ata - erp[idx].astype('datetime64[s]'))
+        erp_diff[idx] = np.abs(ata[:1] - erp[idx].astype('datetime64[s]'))
         erp_diff_list = np.concatenate((erp_diff_list, erp_diff))
         
         
@@ -450,7 +450,7 @@ def data_prepocessing(df):
         df_small = df.loc[df['track_id']==track_id]
         stamp = df_small['stamp'].to_numpy().astype('datetime64[s]')
         ata = ata_Extract(df, track_id, status = 14).astype('datetime64[s]')
-        diff = (ata - stamp).astype('timedelta64[h]')
+        diff = (ata[:1] - stamp).astype('timedelta64[h]')
         hours_bef_arrive = np.concatenate((hours_bef_arrive,diff.astype(int)))
         
         # Add erp before ata column
@@ -458,7 +458,7 @@ def data_prepocessing(df):
             erp_bef_ata = np.concatenate((erp_bef_ata, np.zeros(df_small.shape[0], dtype=bool)))
         else:
             erp = df_small['eta_erp'].to_numpy().astype('datetime64[s]')
-            erp_bef_ata_id = erp <= ata
+            erp_bef_ata_id = erp <= ata[:1]
             erp_bef_ata = np.concatenate((erp_bef_ata, erp_bef_ata_id))
         
         # Add ais before erp column
