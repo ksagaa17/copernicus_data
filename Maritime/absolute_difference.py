@@ -1,15 +1,75 @@
 import utillities as ut
-import os
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 
 
-def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
+def absolute_error(df, filters = {'erp_bef_ata': True, 'ais_bef_erp': False}, percent = 0, bracketwidth = 5):
     """
-    Extracts the eta_erp and eta_ais for a given track_id for a dataframe. 
-    Returns these in numpy arrays.
+    calculate the mean aboslute error for the erp_eta and the ais_eta.
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    filter : dictionary
+        whether or no the data should be cleaned
+    bracketwidth : int
+        width of the error brackets
+    
+    Returns
+    -------
+    mean_erp : ndarray
+    Contains the mean absolute time difference for the eta_erp
+    
+    mean_ais : ndarray
+    Contains the mean absolute time difference for the eta_ais
+    """
+    
+    #print("Warning this function has yet to be optimised so grab a cup of coffe or a snack")
+    
+    # Use filters
+    df_filter = df
+    for key in filters.keys():
+        df_filter = df_filter[df_filter[key] == filters[key]]
+    
+    track_ids = df_filter.track_id.unique()
+    n = len(track_ids)
+    
+    # Determining the maximum amount of hours away we have data for
+    max_hours = np.zeros(n)
+    for i in range(n):
+        max_hours[i] = ut.max_hour(df_filter, track_ids[i])
+    
+    # Maximum amount of points
+    points = int(np.ceil(np.max(max_hours)/bracketwidth)+1) 
+    mean_erp = np.zeros(points)
+    mean_ais = np.zeros(points)
+    
+    ### ais hourly percentage ###
+    time_low = 0
+    time_high = bracketwidth
+    for i in range(points):
+        erp_error, ais_error = ut.Extract_time_brackets_all_tracks(df_filter, time_low, time_high)
+        
+        erp_error = erp_error.astype(float)
+        ais_error = ais_error.astype(float)
+        
+        mean_erp[i] = np.mean(erp_error)
+        
+        ais_length = int(len(ais_error)*percent)        
+        ais_error = np.sort(ais_error)[:ais_length]
+        mean_ais[i] = np.mean(ais_error)
+        
+        time_low += bracketwidth
+        time_high += bracketwidth
+    
+    return mean_erp, mean_ais
+
+
+def absolute_error_old(track_ids, df, bracketwidth = 5, cleaned = True):
+    """
+    calculate the mean aboslute error for the erp_eta and the ais_eta.
 
     Parameters
     ----------
@@ -39,7 +99,7 @@ def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
         max_hours[i] = ut.max_hour(df, track_ids[i])
     
     # Maximum amount of points
-    points = int(np.ceil(np.max(max_hours)/bracketwidth)) 
+    points = int(np.ceil(np.max(max_hours)/bracketwidth)+1) 
     erp_est = np.zeros((n, points))
     ais_est = np.zeros((n, points))
     
@@ -106,22 +166,15 @@ def absolute_error(track_ids, df, bracketwidth = 5, cleaned = True):
 
 
 #%% Absolute Difference
-pardir = os.path.dirname(os.getcwd())
-df = pd.read_csv(pardir + "\\Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
-# df = pd.read_csv("Maritime\\data\\tbl_ship_arrivals_log_202103.log", sep = "|", header=None)
-df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
-              'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
-df = ut.clean_data(df)
-df = ut.add_hours_bef_arr(df)
-df = ut.erp_before_ata(df) # Only nessescary when cleaned = True
-df = ut.ais_before_erp(df) # Only nessescary when cleaned = True
-track_ids = df.track_id.unique()
+month = 3
+df = ut.get_data_cleaned(month)
+percent = 1
 bracketwidth = 5 
-mean_erp, mean_ais = absolute_error(track_ids, df, bracketwidth, cleaned = True)
+mean_erp, mean_ais = absolute_error(df, filters = {'erp_bef_ata': True, 'ais_bef_erp': False}, percent = percent, bracketwidth = bracketwidth)
 
 #%% Plotting
 total_points = len(mean_erp)
-zoom = total_points
+zoom = 85#total_points
 x_ticks = []
 for i in range(total_points):
      a = i*bracketwidth
@@ -137,7 +190,7 @@ ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
-plt.savefig("figures/hourlydiff_new_{0}".format(zoom))
+plt.savefig("figures/hourlydiff_{0}_{1}_{2}_{3}".format(bracketwidth, int(percent*10), zoom, month))
 plt.show()
 
 #%% Percentage

@@ -1,6 +1,8 @@
 from datetime import datetime
 import numpy as np
-
+import os
+import pickle
+import pandas as pd
 
 def clean_data(df):
     """
@@ -595,3 +597,126 @@ def Extract_time_brackets_erp(df, time_low, time_high, track_id):
     
     eta_erp = eta_erp[eta_erp != 'nan']
     return eta_erp
+
+
+def Extract_time_brackets_all_tracks(df, time_low, time_high):
+    """
+    Extracts the erp_error and ais_error at a given time frame
+    Parameters
+    ----------
+    df : pandas dataframe
+        Log fra ETA1.
+    time_low : int
+        time before arrival lower bound
+    time_high : int
+        time before arrival upper bound
+
+
+    Returns
+    -------
+    erp_err : ndarray
+        erp_error for the given time frame.
+    eta_ais : ndarray
+        ais_error for the given time frame.
+    """
+    
+    indexes = df.query('hours_bef_arr >= {0} & hours_bef_arr < {1}'.format(time_low, time_high)).index
+    erp_err = df['erp_error'][indexes]
+    ais_err = df['ais_error'][indexes]
+    
+    erp_err = erp_err.to_numpy().astype(str)
+    ais_err = ais_err.to_numpy().astype(str)
+    
+    erp_err = erp_err[erp_err != 'nan']
+    ais_err = ais_err[ais_err != 'nan']
+    return erp_err, ais_err
+
+
+def get_data(month):
+    """
+    Read data from txt
+
+    Parameters
+    ----------
+    month : int 
+        the month of interest
+        MM.
+    Returns
+    -------
+    df : pandas datframe
+        ship eta data.
+    """
+    pardir = os.path.dirname(os.getcwd())
+    supported_months = [1, 2, 3]
+    if month not in supported_months:
+        raise ValueError("This month is not currently supported. Supported months are {}".format(supported_months))
+    
+    # Make folder for dataframes if not found
+    if not os.path.exists(pardir + '\\Maritime\\data'):
+        os.makedirs(pardir + '\\Maritime\\data')
+    try:
+        with open(f'./data/{month:02d}_dataframe.pickle', 'rb') as file:
+            df = pickle.load(file)
+        print('Pickle loaded')
+    
+    except FileNotFoundError:
+        print('No dataframe pickle found. Pickling dataframe') 
+        df = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+        df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+    
+        with open(f'./data/{month:02d}_dataframe.pickle', 'wb') as file:
+                pickle.dump(df, file)
+        
+        print('Pickling done.')
+    return df
+
+
+def get_data_cleaned(month):
+    """
+    Read data from txt
+
+    Parameters
+    ----------
+    month : int 
+        the month of interest
+        MM.
+    Returns
+    -------
+    df : pandas datframe
+        ship eta data.
+    """
+    pardir = os.path.dirname(os.getcwd())
+    supported_months = [1, 2, 3]
+    if month not in supported_months:
+        raise ValueError("This month is not currently supported. Supported months are {}".format(supported_months))
+    
+    # Make folder for dataframes if not found
+    if not os.path.exists(pardir + '\\Maritime\\data'):
+        os.makedirs(pardir + '\\Maritime\\data')
+    try:
+        with open(f'./data/{month:02d}_cleaned_dataframe.pickle', 'rb') as file:
+            df = pickle.load(file)
+        print('Pickle loaded')
+    
+    except FileNotFoundError:
+        print('No dataframe pickle found. Pickling dataframe') 
+        df = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+        df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+        df = clean_data(df)
+        df = add_hours_bef_arr(df)
+        df = erp_before_ata(df) # Only nessescary when used for filters
+        df = ais_before_erp(df) # Only nessescary when used for filters
+        df = add_eta_error(df)
+    
+        with open(f'./data/{month:02d}_cleaned_dataframe.pickle', 'wb') as file:
+                pickle.dump(df, file)
+        
+        print('Pickling done.')
+    return df
+
+
+if __name__ == "__main__":    
+    df = get_data(3)
+    df_cleaned = get_data_cleaned(3)
