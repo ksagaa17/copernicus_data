@@ -717,6 +717,77 @@ def get_data_cleaned(month):
     return df
 
 
+def get_data_all_month():
+    pardir = os.path.dirname(os.getcwd())
+
+    # Make folder for dataframes if not found
+    if not os.path.exists(pardir + '\\Maritime\\data'):
+        os.makedirs(pardir + '\\Maritime\\data')
+    try:
+        with open(f'./data/all_months_dataframe.pickle', 'rb') as file:
+            df = pickle.load(file)
+        print('Pickle loaded')
+    
+    
+    except FileNotFoundError:
+        print('No dataframe pickle found. Pickling dataframe')
+        supported_months = [1, 2, 3]
+        month = 1
+        df = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+        df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+        for month in supported_months:
+            df1 = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+            df1.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+            df = pd.concat([df, df1])
+    
+        with open(f'./data/all_months_dataframe.pickle', 'wb') as file:
+                pickle.dump(df, file)
+        
+        print('Pickling done.')
+    return df
+
+
+def get_data_all_month_cleaned():
+    pardir = os.path.dirname(os.getcwd())
+
+    # Make folder for dataframes if not found
+    if not os.path.exists(pardir + '\\Maritime\\data'):
+        os.makedirs(pardir + '\\Maritime\\data')
+    try:
+        with open(f'./data/all_months_cleaned_dataframe.pickle', 'rb') as file:
+            df = pickle.load(file)
+        print('Pickle loaded')
+    
+    
+    except FileNotFoundError:
+        print('No dataframe pickle found. Pickling dataframe')
+        supported_months = [1, 2, 3]
+        month = 1
+        df = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+        df.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+        for month in supported_months:
+            df1 = pd.read_csv(f'./data/tbl_ship_arrivals_log_2021{month:02d}.log', sep = "|", header=None)
+            df1.columns = ['track_id', 'mmsi', 'status', 'port_id', 'shape_id', 'stamp',
+                      'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
+            
+            df = pd.concat([df, df1])
+            
+        df = clean_data(df)
+        df = add_hours_bef_arr(df)
+        df = erp_before_ata(df) # Only nessescary when used for filters
+        df = ais_before_erp(df) # Only nessescary when used for filters
+        df = add_eta_error(df)
+        
+        with open(f'./data/all_months_cleaned_dataframe.pickle', 'wb') as file:
+                pickle.dump(df, file)
+        
+        print('Pickling done.')
+    return df
+
 if __name__ == "__main__":    
-    df = get_data(3)
-    df_cleaned = get_data_cleaned(3)
+    # df = get_data(3)
+    # df_cleaned = get_data_cleaned(3)
+    df = get_data_all_month_cleaned()
