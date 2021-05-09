@@ -706,8 +706,8 @@ def get_data_cleaned(month):
                       'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
         df = clean_data(df)
         df = add_hours_bef_arr(df)
-        df = erp_before_ata(df) # Only nessescary when used for filters
-        df = ais_before_erp(df) # Only nessescary when used for filters
+        df = erp_before_ata(df) 
+        df = ais_before_erp(df) 
         df = add_eta_error(df)
     
         with open(f'./data/{month:02d}_cleaned_dataframe.pickle', 'wb') as file:

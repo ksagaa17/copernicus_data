@@ -190,7 +190,7 @@ ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
-plt.savefig("figures/hourlydiff_{0}_{1}_{2}_{3}".format(bracketwidth, int(percent*10), zoom, month))
+plt.savefig("figures/hourlydiff_{0}_{1}_{2}_{3}".format(bracketwidth, int(percent*100), zoom, month))
 plt.show()
 
 #%% Percentage
