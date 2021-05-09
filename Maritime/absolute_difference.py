@@ -166,11 +166,13 @@ def absolute_error_old(track_ids, df, bracketwidth = 5, cleaned = True):
 
 
 #%% Absolute Difference
-month = 1
+month = 3
 df = ut.get_data_cleaned(month)
 percent = 1
 bracketwidth = 5 
-mean_erp, mean_ais = absolute_error(df, filters = {'erp_bef_ata': True, 'ais_bef_erp': False}, percent = percent, bracketwidth = bracketwidth)
+filters = {'erp_bef_ata': True, 'ais_bef_erp': False} #{'erp_is_nan': True} 
+mean_erp, mean_ais = absolute_error(df, filters = filters,
+                                    percent = percent, bracketwidth = bracketwidth)
 
 #%% Plotting
 total_points = len(mean_erp)
