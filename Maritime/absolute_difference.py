@@ -26,8 +26,6 @@ def absolute_error(df, filters = {'erp_bef_ata': True, 'ais_bef_erp': False}, pe
     Contains the mean absolute time difference for the eta_ais
     """
     
-    #print("Warning this function has yet to be optimised so grab a cup of coffe or a snack")
-    
     # Use filters
     df_filter = df
     for key in filters.keys():
