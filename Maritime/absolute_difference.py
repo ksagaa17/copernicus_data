@@ -166,8 +166,8 @@ def absolute_error_old(track_ids, df, bracketwidth = 5, cleaned = True):
 
 
 #%% Absolute Difference
-month = 3
-df = ut.get_data_cleaned(month)
+month = [1,2,3]
+df = ut.get_data_all_month_cleaned()
 percent = 1
 bracketwidth = 5 
 filters = {'erp_bef_ata': True, 'ais_bef_erp': False} #{'erp_is_nan': True} 
