@@ -164,8 +164,13 @@ def absolute_error_old(track_ids, df, bracketwidth = 5, cleaned = True):
 
 
 #%% Absolute Difference
-month = [1,2,3]
-df = ut.get_data_all_month_cleaned()
+month = 3
+suez = False
+df = ut.get_data_cleaned(month)
+if suez == True:
+    stamps = df['stamp'].to_numpy().astype(np.datetime64)
+    df = df.loc[stamps >= np.datetime64('2021-03-23T00:00')]
+
 percent = 1
 bracketwidth = 5 
 filters = {'erp_bef_ata': True, 'ais_bef_erp': False} #{'erp_is_nan': True} 
@@ -190,7 +195,7 @@ ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
 plt.legend(["eta_erp","eta_ais"])
-plt.savefig("figures/hourlydiff_{0}_{1}_{2}_{3}".format(bracketwidth, int(percent*100), zoom, month))
+plt.savefig("figures/hourlydiff_bw{0}_pct{1}_zoom{2}_month{3}_suez{4}".format(bracketwidth, int(percent*100), zoom, month, suez))
 plt.show()
 
 #%% Percentage
