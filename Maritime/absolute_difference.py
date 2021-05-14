@@ -164,9 +164,9 @@ def absolute_error_old(track_ids, df, bracketwidth = 5, cleaned = True):
 
 
 #%% Absolute Difference
-month = 3
+month = [1,2,3]
 suez = False
-df = ut.get_data_cleaned(month)
+df = ut.get_data_all_month_cleaned()
 if suez == True:
     stamps = df['stamp'].to_numpy().astype(np.datetime64)
     df = df.loc[stamps >= np.datetime64('2021-03-23T00:00')]
