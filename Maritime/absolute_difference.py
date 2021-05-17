@@ -66,16 +66,16 @@ def absolute_error(df, filters = {'erp_bef_ata': True, 'ais_bef_erp': False}, pe
 
 
 #%% Absolute Difference
-month = [1,2,3]
+month = 1
 suez = False
-df = ut.get_data_all_month_cleaned()
+df = ut.get_data_cleaned(month) #ut.get_data_all_month_cleaned()
 if suez == True:
     stamps = df['stamp'].to_numpy().astype(np.datetime64)
     df = df.loc[stamps >= np.datetime64('2021-03-23T00:00')]
 
-percent = 0.9
+percent = 1
 bracketwidth = 5 
-filters = {}#{'erp_bef_ata': True, 'ais_bef_erp': False} #{'erp_is_nan': True} 
+filters =  {} # {'erp_bef_ata':True,'ais_bef_erp':False} # {'erp_is_nan': True} # 
 mean_erp, mean_ais = absolute_error(df, filters = filters,
                                     percent = percent, bracketwidth = bracketwidth)
 
