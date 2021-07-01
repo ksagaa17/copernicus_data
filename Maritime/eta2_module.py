@@ -190,6 +190,62 @@ def provider_performance(df, provider):
     return mean_eta1, mean_eta2, mean_sta
 
 
+def port_performance(df, port):
+    """
+    Calculates the absolute difference in time of arrival per hour for a
+    provider 
+    
+    Parameters
+    ----------
+    df : Pandas dataframe
+        dataframe containing the shipdata.
+    provider : string
+        string of a providername.
+
+    Returns
+    -------
+    mean_eta1 : ndarray
+        array of the hourly difference in time of arrival of the eta1
+        algorithm.
+    mean_eta2 : ndarray
+        array of the hourly difference in time of arrival of the eta2
+        algorithm.
+    mean_sta : ndarray
+        array of the hourly difference in time of arrival of the scheduled
+        arrival.
+
+    """
+    
+    df_small = df.loc[df["port"]== port]
+    df_small = df_small.reset_index(drop = True)
+    n = len(df_small)
+    hours = df_small.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    eta1_err = np.zeros((n,m))
+    sta_err = np.zeros((n,m))
+    eta2_err = np.zeros((n,m))
+    ata = df_small["ata"].astype('datetime64[s]')
+    sta = df_small["sta"].astype('datetime64[s]')
+    eta1 = df_small["eta1"].astype('datetime64[s]')
+    eta2 = df_small["eta2"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df_small["hours_bef_arr"][i])
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+
+    mean_eta1 = np.zeros(m)
+    mean_eta2 = np.zeros(m)
+    mean_sta = np.zeros(m)
+
+    for i in range(m):
+        mean_eta1[i] = np.sum(eta1_err[:,i])/np.count_nonzero(eta1_err[:,i])
+        mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
+        mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])
+    return np.mean(mean_eta1), np.mean(mean_eta2), np.mean(mean_sta)
+
+
 if __name__ == "__main__":    
     df = get_data_cleaned_eta2()
     providers =  df.schedule_source.unique().tolist()
