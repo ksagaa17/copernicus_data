@@ -1,18 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May  2 12:30:25 2021
-
-@author: krist
-"""
-
 import utillities as ut
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-
-# =============================================================================
-# VÆR OPMÆRKSOM PÅ FILTRERING - GØR DEN SOM VI ØNSKER
-# =============================================================================    
 
 
 def relative_error(df, filters, bracketwidth = 5, percent = 0.9):
@@ -114,6 +103,7 @@ def plot_relative_error(df, filters, month, bracketwidth = 5, percent = 0.9, ret
         The relative mean absolute error in each timebracket for ais.
 
     """
+
     mean_erp, mean_ais = relative_error(df, filters, bracketwidth = bracketwidth, percent = percent)
     fig_filter = ""
     for key in filters.keys():
@@ -146,6 +136,7 @@ def plot_relative_error(df, filters, month, bracketwidth = 5, percent = 0.9, ret
     
     if returns == True:
         return mean_erp, mean_ais
+
 
 if __name__ == "__main__":
     # Load and clean data

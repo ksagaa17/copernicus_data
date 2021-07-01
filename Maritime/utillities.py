@@ -4,6 +4,7 @@ import os
 import pickle
 import pandas as pd
 
+
 def clean_data(df):
     """
     Clean data. I loggen er der nogle stamps som ikke er relavante ifm at beregne
@@ -22,6 +23,7 @@ def clean_data(df):
     df : pandas dataframe
         Cleaned log.
     """
+
     # remove rows with status 16
     df = df[df['status'] != 16]
     
@@ -95,6 +97,7 @@ def time_difference_array(time1, time2):
         Array of time differences in seconds.
 
     """
+
     time1 = time1.astype('datetime64[s]')
     time2 = time2.astype('datetime64[s]')
     
@@ -154,7 +157,7 @@ def Hour_trackid(df, track_id, day):
 
 
 def ata_Extract(df, track_id, status = 14):
-     """
+    """
     Extracts the ata_ais for a given track_id for a dataframe
     Parameters
     ----------
@@ -167,13 +170,13 @@ def ata_Extract(df, track_id, status = 14):
     -------
     ata_ais : ndarray 
         ata_ais for the given track_id.
-     """
+    """
      
-     indexes = df.query('track_id == {0} & status == {1}'.format(track_id, status)).index
-     ata_ais = df['ata_ais'][indexes]
-     ata_ais = ata_ais.unique().astype(str)
-     ata_ais = ata_ais[ata_ais != 'nan']
-     return ata_ais
+    indexes = df.query('track_id == {0} & status == {1}'.format(track_id, status)).index
+    ata_ais = df['ata_ais'][indexes]
+    ata_ais = ata_ais.unique().astype(str)
+    ata_ais = ata_ais[ata_ais != 'nan']
+    return ata_ais
 
 
 def eta_Extract(df, hour, day, track_id):
@@ -257,6 +260,7 @@ def add_hours_bef_arr(df):
         Log fra ETA1 with additional column with  hours before arrival.
 
     """
+    
     track_ids = df.track_id.unique()
     hours_bef_arrive = np.zeros(0)
     for track_id in track_ids:
@@ -285,6 +289,7 @@ def erp_is_nan(df):
         Log fra ETA1 with additional column indicating whether eta_erp is nan or not.
 
     """
+    
     erp = df['eta_erp'].to_numpy().astype(str)
     erp_is_nan = erp == 'nan'
 
@@ -309,6 +314,7 @@ def erp_before_ata(df):
         Log fra ETA1 with additional column indicating whether eta_erp <= ata_ais.
 
     """
+    
     if any(df.columns != 'erp_is_nan'):
         df = erp_is_nan(df)
     
@@ -344,6 +350,7 @@ def ais_before_erp(df):
         Log fra ETA1 with additional column indicating whether eta_ais <= eta_erp.
 
     """
+    
     track_ids = df.track_id.unique()
     
     ais_bef_erp = np.empty(0, dtype=bool)
@@ -384,6 +391,7 @@ def add_eta_error(df):
          Log fra ETA1 with additional columns of eta errors.
 
     """
+    
     track_ids = df.track_id.unique()
     n = len(track_ids)
     
@@ -410,7 +418,6 @@ def add_eta_error(df):
         
     df['erp_error'] = erp_diff_list
     df['ais_error'] = ais_diff_list
-    
     return df
 
 
@@ -477,8 +484,6 @@ def data_prepocessing(df):
                 
         ais_bef_erp = np.concatenate((ais_bef_erp, ais_bef_erp_id))
             
-    
-    
     df['hours_bef_arr'] = hours_bef_arrive
     df['erp_bef_ata'] = erp_bef_ata
     df['ais_bef_erp'] = ais_bef_erp
@@ -646,6 +651,7 @@ def get_data(month):
     df : pandas datframe
         ship eta data.
     """
+    
     pardir = os.path.dirname(os.getcwd())
     supported_months = [1, 2, 3]
     if month not in supported_months:
@@ -724,7 +730,7 @@ def get_data_all_month():
     if not os.path.exists(pardir + '\\Maritime\\data'):
         os.makedirs(pardir + '\\Maritime\\data')
     try:
-        with open(f'./data/all_months_dataframe.pickle', 'rb') as file:
+        with open('/data/all_months_dataframe.pickle', 'rb') as file:
             df = pickle.load(file)
         print('Pickle loaded')
     
@@ -742,7 +748,7 @@ def get_data_all_month():
                       'eta_erp', 'eta_ais', 'ata_ais', 'bs_ts', 'sog', 'username']
             df = pd.concat([df, df1])
     
-        with open(f'./data/all_months_dataframe.pickle', 'wb') as file:
+        with open('/data/all_months_dataframe.pickle', 'wb') as file:
                 pickle.dump(df, file)
         
         print('Pickling done.')
@@ -756,7 +762,7 @@ def get_data_all_month_cleaned():
     if not os.path.exists(pardir + '\\Maritime\\data'):
         os.makedirs(pardir + '\\Maritime\\data')
     try:
-        with open(f'./data/all_months_cleaned_dataframe.pickle', 'rb') as file:
+        with open('/data/all_months_cleaned_dataframe.pickle', 'rb') as file:
             df = pickle.load(file)
         print('Pickle loaded')
     
@@ -781,11 +787,12 @@ def get_data_all_month_cleaned():
         df = ais_before_erp(df) # Only nessescary when used for filters
         df = add_eta_error(df)
         
-        with open(f'./data/all_months_cleaned_dataframe.pickle', 'wb') as file:
+        with open('/data/all_months_cleaned_dataframe.pickle', 'wb') as file:
                 pickle.dump(df, file)
         
         print('Pickling done.')
     return df
+
 
 if __name__ == "__main__":    
     # df = get_data(3)
