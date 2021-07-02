@@ -33,3 +33,9 @@ portdata = portdata.reset_index(drop = True)
 #%% Port check
 CLSAI = "CLSAI"
 OMSOH = "OMSOH"
+
+df_CLSAI = df.loc[df["port"]== OMSOH]
+df_OMSOH = df.loc[df["port"]== OMSOH]
+
+entries_CLSAI = df_CLSAI.entry_id.unique().tolist()
+entries_OMSOH = df_OMSOH.entry_id.unique().tolist()

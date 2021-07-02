@@ -250,3 +250,4 @@ if __name__ == "__main__":
     df = get_data_cleaned_eta2()
     providers =  df.schedule_source.unique().tolist()
     sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
+    
