@@ -11,14 +11,15 @@ import numpy as np
 
 df = eta.get_data_cleaned_eta2()
 mean_eta1, mean_eta2, mean_sta = eta.absolute_difference(df)
-zoom = 100
+n = len(mean_eta1)
+zoom = 200
 
 plt.style.use('seaborn-darkgrid')
 fig, ax = plt.subplots()
-xticks = np.linspace(393,1,393)
-ax.plot(xticks[:zoom], (np.flip(mean_eta1)/(60*60))[:zoom], '-')
-ax.plot(xticks[:zoom], (np.flip(mean_eta2)/(60*60))[:zoom], '-')
-ax.plot(xticks[:zoom], (np.flip(mean_sta)/(60*60))[:zoom], '-')
+xticks = np.linspace(1,n,n)
+ax.plot(xticks[:zoom], mean_eta1[:zoom]/(60*60))
+ax.plot(xticks[:zoom], mean_eta2[:zoom]/(60*60))
+ax.plot(xticks[:zoom], mean_sta[:zoom]/(60*60))
 ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')

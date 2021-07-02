@@ -56,11 +56,11 @@ def get_data_cleaned_eta2():
 
     try:
        with open('data/eta2_dataframe_cleaned.pickle', 'rb') as file:
-           df = pickle.load(file)
+           df2 = pickle.load(file)
        print('Pickle loaded')
     
     except FileNotFoundError:
-        print('No dataframe pickle found. Pickling dataframe') 
+        print('No dataframe pickle found. Pickling dataframe. This takes a while so grab a cup of coffe') 
         df = pd.read_csv('data/20210628_eta2_eval_data.csv')
         # Adding hours before arrival
         entries = df.entry_id.unique()
@@ -77,10 +77,32 @@ def get_data_cleaned_eta2():
         
         df = df[df["hours_bef_arr"]>=0]
         df = df.reset_index(drop = True)
+        
+        df_second = pd.DataFrame()
+        for entry in entries:
+            df_small = df.loc[df["entry_id"]==entry]
+            n = len(df_small)
+            df_small = df_small.reset_index(drop=True)
+            for i in range(2,n):
+                a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
+                if a > 0:
+                    hours = np.zeros(a)
+                    tmp_df = pd.DataFrame()
+                    for j in range(a):
+                        hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
+                        df_small.iat[i,9] = hours[j] # Carefull if I ever add another row
+                        row = df_small.iloc[i] # Carefull if I ever use timestamp again
+                        df_row = pd.DataFrame(row).transpose()
+                        tmp_df = tmp_df.append(df_row)
+                    df_second = df_second.append(tmp_df)
+        df2 = df.append(df_second)
+        df2 = df2.sort_values(["entry_id", "hours_bef_arr"], ascending = [True, False])
+        df2 = df2.reset_index(drop=True)
+        
         with open('data/eta2_dataframe_cleaned.pickle', 'wb') as file:
-            pickle.dump(df, file)
+            pickle.dump(df2, file)
         print('Pickling done.')
-    return df
+    return df2
 
 
 def absolute_difference(df):
@@ -269,30 +291,24 @@ if __name__ == "__main__":
     # providers =  df.schedule_source.unique().tolist()
     # sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
     # test add entries
-    entries =  df.entry_id.unique().tolist()
-    m = len(entries)
-    k = 0
-    for entry in entries:
-        k +=1
-        df_small = df.loc[df["entry_id"]==entry]
-        n = len(df_small)
-        df_second = pd.DataFrame()
-        df_small = df_small.reset_index(drop=True)
-        for i in range(2,n):
-            if df_small["hours_bef_arr"][i-1]-1 > df_small["hours_bef_arr"][i]:
-                a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
-                hours = np.zeros(a)
-                tmp_df = pd.DataFrame()
-                for j in range(a):
-                    hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
-                    df_small.iat[i,9] = hours[j] # carefull if I ever add another row
-                    row = df_small.iloc[i]
-                    df_row = pd.DataFrame(row).transpose()
-                    tmp_df = tmp_df.append(df_row)
-                df_second = df_second.append(tmp_df)
-        print(k)
-    df2 = df.append(df_second)
-    df2.drop_duplicates(subset=None, keep='first', inplace=False)
-    df2.sort_values(["entry_id","timestamp"])
-    df2.reset_index(drop=True)
-    
+    # entries =  df.entry_id.unique().tolist()
+    # df_second = pd.DataFrame()
+    # for entry in entries:
+    #     df_small = df.loc[df["entry_id"]==entry]
+    #     n = len(df_small)
+    #     df_small = df_small.reset_index(drop=True)
+    #     for i in range(2,n):
+    #         a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
+    #         if a > 0:
+    #             hours = np.zeros(a)
+    #             tmp_df = pd.DataFrame()
+    #             for j in range(a):
+    #                 hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
+    #                 df_small.iat[i,9] = hours[j] # Carefull if I ever add another row
+    #                 row = df_small.iloc[i] # Carefull if I ever use timestamp again
+    #                 df_row = pd.DataFrame(row).transpose()
+    #                 tmp_df = tmp_df.append(df_row)
+    #             df_second = df_second.append(tmp_df)
+    # df2 = df.append(df_second)
+    # df2 = df2.sort_values(["entry_id", "hours_bef_arr"], ascending = [True, False])
+    # df2 = df2.reset_index(drop=True)
