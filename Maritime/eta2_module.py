@@ -7,6 +7,7 @@ import pandas as pd
 import os
 import pickle
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def get_data_eta2():
@@ -190,6 +191,23 @@ def provider_performance(df, provider):
     return mean_eta1, mean_eta2, mean_sta
 
 
+def provider_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
+    n = len(mean_eta1)
+    plt.style.use('seaborn-darkgrid')
+    fig, ax = plt.subplots()
+    xticks = np.linspace(1,n,n)
+    ax.plot(xticks, mean_eta1/(60*60))
+    ax.plot(xticks, mean_eta2/(60*60))
+    ax.plot(xticks, mean_schedule/(60*60))
+    ax.invert_xaxis()
+    ax.set_ylabel("Absolute error in hours")
+    ax.set_xlabel('Hours before arrival')
+    plt.legend(["eta1","eta2", "schedule"])
+    plt.title("{0}".format(plttitle))
+    plt.savefig("figures/{0}_{1}.pdf".format(plttitle, zoom))
+    plt.show()
+    
+
 def port_performance(df, port):
     """
     Calculates the absolute difference in time of arrival per hour for a
@@ -248,6 +266,33 @@ def port_performance(df, port):
 
 if __name__ == "__main__":    
     df = get_data_cleaned_eta2()
-    providers =  df.schedule_source.unique().tolist()
-    sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
+    # providers =  df.schedule_source.unique().tolist()
+    # sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
+    # test add entries
+    entries =  df.entry_id.unique().tolist()
+    m = len(entries)
+    k = 0
+    for entry in entries:
+        k +=1
+        df_small = df.loc[df["entry_id"]==entry]
+        n = len(df_small)
+        df_second = pd.DataFrame()
+        df_small = df_small.reset_index(drop=True)
+        for i in range(2,n):
+            if df_small["hours_bef_arr"][i-1]-1 > df_small["hours_bef_arr"][i]:
+                a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
+                hours = np.zeros(a)
+                tmp_df = pd.DataFrame()
+                for j in range(a):
+                    hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
+                    df_small.iat[i,9] = hours[j] # carefull if I ever add another row
+                    row = df_small.iloc[i]
+                    df_row = pd.DataFrame(row).transpose()
+                    tmp_df = tmp_df.append(df_row)
+                df_second = df_second.append(tmp_df)
+        print(k)
+    df2 = df.append(df_second)
+    df2.drop_duplicates(subset=None, keep='first', inplace=False)
+    df2.sort_values(["entry_id","timestamp"])
+    df2.reset_index(drop=True)
     
