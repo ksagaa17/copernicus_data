@@ -39,3 +39,13 @@ df_OMSOH = df.loc[df["port"]== OMSOH]
 
 entries_CLSAI = df_CLSAI.entry_id.unique().tolist()
 entries_OMSOH = df_OMSOH.entry_id.unique().tolist()
+
+
+# Interressandte
+# 7:MXPGO, 8:SENRK, 11:DECKL, 32:IDJKT, 38:TWKHH, 147:TRMER,
+
+
+
+# dårlige 
+# 2: INTUT, 12:USSAV, KRPUS,
+

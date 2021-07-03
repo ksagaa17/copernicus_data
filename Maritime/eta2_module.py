@@ -41,7 +41,8 @@ def get_data_eta2():
 
 def get_data_cleaned_eta2():
     """
-    Extracts the data from a csv file
+    Extracts the data from a csv file where entries after arrival has been removed
+    and an entry has been added for each hour in areas with no entries.
 
     Returns
     -------
@@ -214,6 +215,27 @@ def provider_performance(df, provider):
 
 
 def provider_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
+    """
+    
+
+    Parameters
+    ----------
+    mean_eta1 : TYPE
+        DESCRIPTION.
+    mean_eta2 : TYPE
+        DESCRIPTION.
+    mean_schedule : TYPE
+        DESCRIPTION.
+    plttitle : TYPE
+        DESCRIPTION.
+    zoom : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
     n = len(mean_eta1)
     plt.style.use('seaborn-darkgrid')
     fig, ax = plt.subplots()
@@ -284,6 +306,70 @@ def port_performance(df, port):
         mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
         mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])
     return np.mean(mean_eta1), np.mean(mean_eta2), np.mean(mean_sta)
+
+
+def plot_eta_entry(df, entry_id):
+    """
+    
+
+    Parameters
+    ----------
+    df : TYPE
+        DESCRIPTION.
+    entry_id : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    
+    df_small = df.loc[df["entry_id"] == entry_id]
+    df_small = df_small.reset_index(drop = True)
+    n = len(df_small)
+    hours = df_small.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    eta1_err = np.zeros((n,m))
+    sta_err = np.zeros((n,m))
+    eta2_err = np.zeros((n,m))
+    ata = df_small["ata"].astype('datetime64[s]')
+    sta = df_small["sta"].astype('datetime64[s]')
+    eta1 = df_small["eta1"].astype('datetime64[s]')
+    eta2 = df_small["eta2"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df_small["hours_bef_arr"][i])
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+
+    mean_eta1 = np.zeros(m)
+    mean_eta2 = np.zeros(m)
+    mean_sta = np.zeros(m)
+
+    for i in range(m):
+        mean_eta1[i] = np.sum(eta1_err[:,i])/np.count_nonzero(eta1_err[:,i])
+        mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
+        mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])   
+    
+    habour = df_small["port"][0]
+    provider = df_small["schedule_source"][0]
+    
+    k = len(mean_eta1)
+    plt.style.use('seaborn-darkgrid')
+    fig, ax = plt.subplots()
+    xticks = np.linspace(1,k,k)
+    ax.plot(xticks, mean_eta1/(60*60))
+    ax.plot(xticks, mean_eta2/(60*60))
+    ax.plot(xticks, mean_sta/(60*60))
+    ax.invert_xaxis()
+    ax.set_ylabel("Absolute error in hours")
+    ax.set_xlabel('Hours before arrival')
+    plt.legend(["eta1","eta2", "schedule"])
+    plt.title("{0}_{1}_{2}".format(entry_id, habour, provider))
+    plt.savefig("figures/{0}_{1}_{2}.pdf".format(entry_id, habour, provider))
+    plt.show()
 
 
 if __name__ == "__main__":    
