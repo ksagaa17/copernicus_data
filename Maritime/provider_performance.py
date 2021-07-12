@@ -147,3 +147,9 @@ plt.legend(loc = "upper right", bbox_to_anchor = (1.51,1), labels = ["Scraper Me
 plt.title("ETA2 comparison")
 plt.savefig("figures/Provider_comparison.pdf")
 plt.show()
+
+#%% Overall dataframe
+
+
+
+
