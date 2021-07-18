@@ -10,9 +10,10 @@ import numpy as np
 
 
 df = eta.get_data_cleaned_eta2()
-mean_eta1, mean_eta2, mean_sta = eta.absolute_difference(df)
+percent = 0.9
+mean_eta1, mean_eta2, mean_sta = eta.absolute_difference(df, percent)
 n = len(mean_eta1)
-zoom = 200
+zoom = 200 #393
 divider = 60*60
 
 plt.style.use('seaborn-darkgrid')

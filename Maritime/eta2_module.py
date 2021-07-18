@@ -106,7 +106,7 @@ def get_data_cleaned_eta2():
     return df2
 
 
-def absolute_difference(df):
+def absolute_difference(df, percent):
     """
     Calculates the absolute difference in time of arrivial per hour
 
@@ -114,7 +114,9 @@ def absolute_difference(df):
     ----------
     df : Pandas dataframe
         Dataframe containing the cleaned shipdata.
-
+        
+    percent: float
+        percentage of data to be used
     Returns
     -------
     mean_eta1 : ndarray
@@ -146,14 +148,24 @@ def absolute_difference(df):
         eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
         sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
+    #length = int(len(eta1_err[:,0])*percent)
     mean_eta1 = np.zeros(m)
     mean_eta2 = np.zeros(m)
     mean_sta = np.zeros(m)
 
     for i in range(m):
-        mean_eta1[i] = np.sum(eta1_err[:,i])/np.count_nonzero(eta1_err[:,i])
-        mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
-        mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])   
+        args = np.where(eta1_err[:,i]!=0)
+        eta1_tmp = eta1_err[:,i][args]
+        eta2_tmp = eta2_err[:,i][args]
+        sta_tmp = sta_err[:,i][args]
+        length = int(len(eta1_tmp)*percent)
+
+        eta1_use = np.sort(eta1_tmp)[:length]
+        eta2_use = np.sort(eta2_tmp)[:length]
+        sta_use = np.sort(sta_tmp)[:length]
+        mean_eta1[i] = np.sum(eta1_use)/length
+        mean_eta2[i] = np.sum(eta2_use)/length
+        mean_sta[i] = np.sum(sta_use)/length   
     
     return mean_eta1, mean_eta2, mean_sta
 
@@ -220,20 +232,20 @@ def provider_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
 
     Parameters
     ----------
-    mean_eta1 : TYPE
-        DESCRIPTION.
-    mean_eta2 : TYPE
-        DESCRIPTION.
-    mean_schedule : TYPE
-        DESCRIPTION.
-    plttitle : TYPE
-        DESCRIPTION.
-    zoom : TYPE
-        DESCRIPTION.
+    mean_eta1 : ndarray
+        contains the mean eta1 error for each hour away from destination
+    mean_eta2 : ndarray
+        contains the mean eta2 error for each hour away from destination.
+    mean_schedule : ndarray
+        contains the mean schedule error for each hour away from destination..
+    plttitle : str
+        title of plot.
+    zoom : int
+        zoom of plot.
 
     Returns
     -------
-    None.
+    A plot and saves the figure using zoom and plttitle.
 
     """
     n = len(mean_eta1)
@@ -314,14 +326,14 @@ def plot_eta_entry(df, entry_id):
 
     Parameters
     ----------
-    df : TYPE
-        DESCRIPTION.
-    entry_id : TYPE
-        DESCRIPTION.
+    df : Pandas dataframe
+        ship arrival data.
+    entry_id : int
+        entry_id of a ship.
 
     Returns
     -------
-    None.
+    a plot and saves the figure
 
     """
     
@@ -374,6 +386,8 @@ def plot_eta_entry(df, entry_id):
 
 if __name__ == "__main__":    
     df = get_data_cleaned_eta2()
+    percent = 0.9
+    mean1, mean2, means = absolute_difference(df, percent)
     # providers =  df.schedule_source.unique().tolist()
     # sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
     # test add entries
