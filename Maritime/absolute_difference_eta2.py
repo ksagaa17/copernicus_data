@@ -33,4 +33,3 @@ plt.show()
 final_mean_eta1 = np.mean(mean_eta1)/divider
 final_mean_eat2 = np.mean(mean_eta2)/divider
 final_mean_sta = np.mean(mean_sta)/divider
-
