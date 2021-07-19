@@ -17,7 +17,10 @@ eta2s = np.zeros(n)
 stas = np.zeros(n)
 
 for i in range(n):
-    eta1s[i], eta2s[i], stas[i] = eta.port_performance(df, ports[i])
+     eta1_tmp, eta2_tmp, sta_tmp = eta.port_performance(df, ports[i])
+     eta1s[i] = np.mean(eta1_tmp)
+     eta2s[i] = np.mean(eta2_tmp)
+     stas[i] = np.mean(sta_tmp)
 
 row = np.linspace(1,n,n)
 data = np.array([[ports],[eta1s/(60*60)],[eta2s/(60*60)],[stas/(60*60)]]).reshape(4, n).T
@@ -29,23 +32,24 @@ nan_eta2 = eta2 != 'nan'
 portdata = portdata[nan_eta2]
 portdata = portdata.reset_index(drop = True)
 
+#%% plots
+ports_counted = df['port'].value_counts()
+index = ports_counted.index[:10]
 
-#%% Port check
-CLSAI = "CLSAI"
-OMSOH = "OMSOH"
-
-df_CLSAI = df.loc[df["port"]== OMSOH]
-df_OMSOH = df.loc[df["port"]== OMSOH]
-
-entries_CLSAI = df_CLSAI.entry_id.unique().tolist()
-entries_OMSOH = df_OMSOH.entry_id.unique().tolist()
+for i in range(len(index)):
+    eta1, eta2, sta = eta.port_performance(df, index[i])
+    n = len(eta1)
+    eta.attribute_plot(eta1, eta2, sta, index[i], n)
 
 
-# Interressandte
-# 7:MXPGO, 8:SENRK, 11:DECKL, 32:IDJKT, 38:TWKHH, 147:TRMER,
+# df_CLSAI = df.loc[df["port"]== "CLSAI"]
+# df_OMSOH = df.loc[df["port"]== "OMSOH"]
 
+# entries_CLSAI = df_CLSAI.entry_id.unique().tolist()
+# entries_OMSOH = df_OMSOH.entry_id.unique().tolist()
 
+# # Interresante
+# # 7:MXPGO, 8:SENRK, 11:DECKL, 32:IDJKT, 38:TWKHH, 147:TRMER,
 
-# dårlige 
-# 2: INTUT, 12:USSAV, KRPUS,
-
+# # Dårlige
+# # 2: INTUT, 12:USSAV, KRPUS,

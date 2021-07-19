@@ -14,4 +14,4 @@ entries = df_small.entry_id.unique().tolist()
 
 #%%
 for i in range(len(entries)):
-    eta.plot_eta_entry(df_small, entries[i])
+    eta.plot_entry(df_small, entries[i])

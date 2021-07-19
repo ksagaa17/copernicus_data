@@ -148,7 +148,6 @@ def absolute_difference(df, percent):
         eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
         sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
-    #length = int(len(eta1_err[:,0])*percent)
     mean_eta1 = np.zeros(m)
     mean_eta2 = np.zeros(m)
     mean_sta = np.zeros(m)
@@ -159,7 +158,6 @@ def absolute_difference(df, percent):
         eta2_tmp = eta2_err[:,i][args]
         sta_tmp = sta_err[:,i][args]
         length = int(len(eta1_tmp)*percent)
-
         eta1_use = np.sort(eta1_tmp)[:length]
         eta2_use = np.sort(eta2_tmp)[:length]
         sta_use = np.sort(sta_tmp)[:length]
@@ -168,6 +166,132 @@ def absolute_difference(df, percent):
         mean_sta[i] = np.sum(sta_use)/length   
     
     return mean_eta1, mean_eta2, mean_sta
+
+
+def absolute_difference_eta1(df, percent):
+    """
+    Calculates the absolute difference in time of arrivial per hour
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Dataframe containing the cleaned shipdata.
+        
+    percent: float
+        percentage of data to be used
+    Returns
+    -------
+    mean_eta1 : ndarray
+        array containing the mean difference per hour for each city
+        for the eta1 algorithm.
+
+    """
+    
+    n = len(df)
+    hours = df.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    eta1_err = np.zeros((n,m))
+    ata = df["ata"].astype('datetime64[s]')
+    eta1 = df["eta1"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df["hours_bef_arr"][i])
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+
+    mean_eta1 = np.zeros(m)
+
+    for i in range(m):
+        args = np.where(eta1_err[:,i]!=0)
+        eta1_tmp = eta1_err[:,i][args]
+        length = int(len(eta1_tmp)*percent)
+        eta1_use = np.sort(eta1_tmp)[:length]
+        mean_eta1[i] = np.sum(eta1_use)/length
+    
+    return mean_eta1
+
+
+def absolute_difference_eta2(df, percent):
+    """
+    Calculates the absolute difference in time of arrivial per hour
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Dataframe containing the cleaned shipdata.
+        
+    percent: float
+        percentage of data to be used
+    Returns
+    -------
+    mean_eta2 : ndarray
+        array containing the mean difference per hour for each city
+        for the eta2 algorithm.
+
+    """
+    
+    n = len(df)
+    hours = df.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    eta2_err = np.zeros((n,m))
+    ata = df["ata"].astype('datetime64[s]')
+    eta2 = df["eta2"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df["hours_bef_arr"][i])
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+
+    mean_eta2 = np.zeros(m)
+
+    for i in range(m):
+        args = np.where(eta2_err[:,i]!=0)
+        eta2_tmp = eta2_err[:,i][args]
+        length = int(len(eta2_tmp)*percent)
+        eta2_use = np.sort(eta2_tmp)[:length]
+        mean_eta2[i] = np.sum(eta2_use)/length  
+    
+    return mean_eta2
+
+
+def absolute_difference_sta(df, percent):
+    """
+    Calculates the absolute difference in time of arrivial per hour
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Dataframe containing the cleaned shipdata.
+        
+    percent: float
+        percentage of data to be used
+    Returns
+    -------
+    mean_sta : ndarray
+        array containing the mean difference per hour for each city
+        for the scheduled arrival.
+
+    """
+    
+    n = len(df)
+    hours = df.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    sta_err = np.zeros((n,m))
+    ata = df["ata"].astype('datetime64[s]')
+    sta = df["sta"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df["hours_bef_arr"][i])
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+
+    mean_sta = np.zeros(m)
+
+    for i in range(m):
+        args = np.where(sta_err[:,i]!=0)
+        sta_tmp = sta_err[:,i][args]
+        length = int(len(sta_tmp)*percent)
+        sta_use = np.sort(sta_tmp)[:length]
+        mean_sta[i] = np.sum(sta_use)/length   
+    
+    return mean_sta
 
 
 def provider_performance(df, provider):
@@ -224,44 +348,6 @@ def provider_performance(df, provider):
         mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
         mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])
     return mean_eta1, mean_eta2, mean_sta
-
-
-def provider_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
-    """
-    
-
-    Parameters
-    ----------
-    mean_eta1 : ndarray
-        contains the mean eta1 error for each hour away from destination
-    mean_eta2 : ndarray
-        contains the mean eta2 error for each hour away from destination.
-    mean_schedule : ndarray
-        contains the mean schedule error for each hour away from destination..
-    plttitle : str
-        title of plot.
-    zoom : int
-        zoom of plot.
-
-    Returns
-    -------
-    A plot and saves the figure using zoom and plttitle.
-
-    """
-    n = len(mean_eta1)
-    plt.style.use('seaborn-darkgrid')
-    fig, ax = plt.subplots()
-    xticks = np.linspace(1,n,n)
-    ax.plot(xticks, mean_eta1/(60*60))
-    ax.plot(xticks, mean_eta2/(60*60))
-    ax.plot(xticks, mean_schedule/(60*60))
-    ax.invert_xaxis()
-    ax.set_ylabel("Absolute error in hours")
-    ax.set_xlabel('Hours before arrival')
-    plt.legend(["eta1","eta2", "schedule"])
-    plt.title("{0}".format(plttitle))
-    plt.savefig("figures/{0}_{1}.pdf".format(plttitle, zoom))
-    plt.show()
     
 
 def port_performance(df, port):
@@ -317,13 +403,53 @@ def port_performance(df, port):
         mean_eta1[i] = np.sum(eta1_err[:,i])/np.count_nonzero(eta1_err[:,i])
         mean_eta2[i] = np.sum(eta2_err[:,i])/np.count_nonzero(eta2_err[:,i])
         mean_sta[i] = np.sum(sta_err[:,i])/np.count_nonzero(sta_err[:,i])
-    return np.mean(mean_eta1), np.mean(mean_eta2), np.mean(mean_sta)
+    return mean_eta1, mean_eta2, mean_sta
 
 
-def plot_eta_entry(df, entry_id):
+def attribute_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
     """
+    makes a plot showcasing the performance of a given attribute
+    
+    Parameters
+    ----------
+    mean_eta1 : ndarray
+        contains the mean eta1 error for each hour away from destination
+    mean_eta2 : ndarray
+        contains the mean eta2 error for each hour away from destination.
+    mean_schedule : ndarray
+        contains the mean schedule error for each hour away from destination..
+    plttitle : str
+        title of plot.
+    zoom : int
+        zoom of plot.
+
+    Returns
+    -------
+    A plot and saves the figure using zoom and plttitle.
+
+    """
+    n = len(mean_eta1)
+    plt.style.use('seaborn-darkgrid')
+    fig, ax = plt.subplots()
+    xticks = np.linspace(1,n,n)
+    ax.plot(xticks, mean_eta1/(60*60))
+    ax.plot(xticks, mean_eta2/(60*60))
+    ax.plot(xticks, mean_schedule/(60*60))
+    ax.invert_xaxis()
+    ax.set_ylabel("Absolute error in hours")
+    ax.set_xlabel('Hours before arrival')
+    plt.legend(["eta1","eta2", "schedule"])
+    plt.title("{0}".format(plttitle))
+    plt.savefig("figures/{0}_{1}.pdf".format(plttitle, zoom))
+    plt.show()
     
 
+
+
+def plot_entry(df, entry_id):
+    """
+    makes a plot showing the data for an entry id
+    
     Parameters
     ----------
     df : Pandas dataframe
