@@ -67,7 +67,7 @@ def get_data_cleaned_eta2(filename):
 
     try:
        with open('data/{0}_dataframe_cleaned.pickle'.format(filename), 'rb') as file:
-           df2 = pickle.load(file)
+           df = pickle.load(file)
        print('Pickle loaded')
     
     except FileNotFoundError:
@@ -89,31 +89,31 @@ def get_data_cleaned_eta2(filename):
         df = df[df["hours_bef_arr"]>=0]
         df = df.reset_index(drop = True)
         
-        df_second = pd.DataFrame()
-        for entry in entries:
-            df_small = df.loc[df["entry_id"]==entry]
-            n = len(df_small)
-            df_small = df_small.reset_index(drop=True)
-            for i in range(2,n):
-                a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
-                if a > 0:
-                    hours = np.zeros(a)
-                    tmp_df = pd.DataFrame()
-                    for j in range(a):
-                        hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
-                        df_small.iat[i,9] = hours[j] # Carefull if I ever add another row
-                        row = df_small.iloc[i] # Carefull if I ever use timestamp again
-                        df_row = pd.DataFrame(row).transpose()
-                        tmp_df = tmp_df.append(df_row)
-                    df_second = df_second.append(tmp_df)
-        df2 = df.append(df_second)
-        df2 = df2.sort_values(["entry_id", "hours_bef_arr"], ascending = [True, False])
-        df2 = df2.reset_index(drop=True)
+        # df_second = pd.DataFrame()
+        # for entry in entries:
+        #     df_small = df.loc[df["entry_id"]==entry]
+        #     n = len(df_small)
+        #     df_small = df_small.reset_index(drop=True)
+        #     for i in range(2,n):
+        #         a = int(df_small["hours_bef_arr"][i-1]-1 - df_small["hours_bef_arr"][i])
+        #         if a > 0:
+        #             hours = np.zeros(a)
+        #             tmp_df = pd.DataFrame()
+        #             for j in range(a):
+        #                 hours[j] =  df_small["hours_bef_arr"][i-1]-1-j
+        #                 df_small.iat[i,9] = hours[j] # Carefull if I ever add another row
+        #                 row = df_small.iloc[i] # Carefull if I ever use timestamp again
+        #                 df_row = pd.DataFrame(row).transpose()
+        #                 tmp_df = tmp_df.append(df_row)
+        #             df_second = df_second.append(tmp_df)
+        # df2 = df.append(df_second)
+        # df2 = df2.sort_values(["entry_id", "hours_bef_arr"], ascending = [True, False])
+        # df2 = df2.reset_index(drop=True)
         
         with open('data/{0}_dataframe_cleaned.pickle'.format(filename), 'wb') as file:
-            pickle.dump(df2, file)
+            pickle.dump(df, file)
         print('Pickling done.')
-    return df2
+    return df
 
 
 def absolute_difference(df, percent):
@@ -521,9 +521,10 @@ def plot_entry(df, entry_id):
 
 
 if __name__ == "__main__":    
-    df = get_data_cleaned_eta2()
-    percent = 0.9
-    mean1, mean2, means = absolute_difference(df, percent)
+    file = "eta2_dump.csv"
+    df = get_data_cleaned_eta2(file)
+    #percent = 0.9
+    #mean1, mean2, means = absolute_difference(df, percent)
     # providers =  df.schedule_source.unique().tolist()
     # sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
     # test add entries
