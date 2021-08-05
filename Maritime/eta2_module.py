@@ -10,10 +10,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_data_eta2():
+def get_data_eta2(filename):
     """
     Extracts the data from a csv file
-
+    
+    Parameters
+    ----------
+    filename : str
+        name of datafile containing the shipdata.
+    
     Returns
     -------
     df : pandas dataframe
@@ -26,24 +31,29 @@ def get_data_eta2():
         os.makedirs(pardir + '\\Maritime\\data')
     
     try:
-       with open('data/eta2_dataframe.pickle', 'rb') as file:
+       with open('data/{}_dataframe.pickle'.format(filename), 'rb') as file:
            df = pickle.load(file)
        print('Pickle loaded')
     
     except FileNotFoundError:
         print('No dataframe pickle found. Pickling dataframe') 
-        df = pd.read_csv('data/20210628_eta2_eval_data.csv')
-        with open('data/eta2_dataframe.pickle', 'wb') as file:
+        df = pd.read_csv('data/{0}'.format(filename))
+        with open('data/{0}_dataframe.pickle'.format(filename), 'wb') as file:
             pickle.dump(df, file)
         print('Pickling done.')
     return df
 
 
-def get_data_cleaned_eta2():
+def get_data_cleaned_eta2(filename):
     """
     Extracts the data from a csv file where entries after arrival has been removed
     and an entry has been added for each hour in areas with no entries.
-
+    
+    Parameters
+    ----------
+    filename : str
+        name of datafile containing the shipdata.
+    
     Returns
     -------
     df : pandas dataframe
@@ -56,13 +66,13 @@ def get_data_cleaned_eta2():
         os.makedirs(pardir + '\\Maritime\\data')
 
     try:
-       with open('data/eta2_dataframe_cleaned.pickle', 'rb') as file:
+       with open('data/{0}_dataframe_cleaned.pickle'.format(filename), 'rb') as file:
            df2 = pickle.load(file)
        print('Pickle loaded')
     
     except FileNotFoundError:
         print('No dataframe pickle found. Pickling dataframe. This takes a while so grab a cup of coffe') 
-        df = pd.read_csv('data/20210628_eta2_eval_data.csv')
+        df = pd.read_csv('data/{0}'.format(filename))
         # Adding hours before arrival
         entries = df.entry_id.unique()
         hours_bef_arrive = np.zeros(0)
@@ -100,7 +110,7 @@ def get_data_cleaned_eta2():
         df2 = df2.sort_values(["entry_id", "hours_bef_arr"], ascending = [True, False])
         df2 = df2.reset_index(drop=True)
         
-        with open('data/eta2_dataframe_cleaned.pickle', 'wb') as file:
+        with open('data/{0}_dataframe_cleaned.pickle'.format(filename), 'wb') as file:
             pickle.dump(df2, file)
         print('Pickling done.')
     return df2

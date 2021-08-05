@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import eta2_module as eta
 import numpy as np
 
-
-df = eta.get_data_cleaned_eta2()
+file = "eta2_dump.csv"
+df = eta.get_data_cleaned_eta2(file)
 percent = 0.9
 mean_eta1, mean_eta2, mean_sta = eta.absolute_difference(df, percent)
 n = len(mean_eta1)
@@ -28,7 +28,6 @@ ax.set_xlabel('Hours before arrival')
 plt.legend(["eta1","eta2", "schedule"])
 plt.savefig("figures/Absolute_difference_eta2_{0}.pdf".format(zoom))
 plt.show()
-
 
 final_mean_eta1 = np.mean(mean_eta1)/divider
 final_mean_eat2 = np.mean(mean_eta2)/divider
