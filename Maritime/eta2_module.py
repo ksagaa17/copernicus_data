@@ -154,10 +154,10 @@ def absolute_difference(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        place = m-1-hba
-        eta1_err[i, place] = np.abs(ata[i]-eta1[i]).total_seconds()
-        eta2_err[i, place] = np.abs(ata[i]-eta2[i]).total_seconds()
-        sta_err[i, place] = np.abs(ata[i]-sta[i]).total_seconds()
+#        place = m-1-hba
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
     mean_eta1 = np.zeros(m)
     mean_eta2 = np.zeros(m)
@@ -215,8 +215,8 @@ def absolute_difference_eta1(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        place = m -1 -hba
-        eta1_err[i, place] = np.abs(ata[i]-eta1[i]).total_seconds()
+#        place = m -1 -hba
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
 
     mean_eta1 = np.zeros(m)
 
@@ -262,8 +262,8 @@ def absolute_difference_eta2(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        place = m-1-hba
-        eta2_err[i, place] = np.abs(ata[i]-eta2[i]).total_seconds()
+#        place = m-1-hba
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
 
     mean_eta2 = np.zeros(m)
 
@@ -309,8 +309,8 @@ def absolute_difference_sta(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        place = m-1-hba
-        sta_err[i, place] = np.abs(ata[i]-sta[i]).total_seconds()
+        #place = m-1-hba
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
     mean_sta = np.zeros(m)
 
@@ -361,8 +361,8 @@ def absolute_difference_nextport(df, percent):
 
     for i in range(n):
         hba = int(df_small["hours_bef_arr"][i])
-        place = m - 1 - hba
-        nport_err[i, place] = np.abs(ata[i]-nport[i]).total_seconds()
+        #place = m - 1 - hba
+        nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
 
     mean_nport = np.zeros(m)
 
