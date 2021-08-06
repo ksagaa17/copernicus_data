@@ -154,28 +154,37 @@ def absolute_difference(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
-        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
-        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+        place = m-1-hba
+        eta1_err[i, place] = np.abs(ata[i]-eta1[i]).total_seconds()
+        eta2_err[i, place] = np.abs(ata[i]-eta2[i]).total_seconds()
+        sta_err[i, place] = np.abs(ata[i]-sta[i]).total_seconds()
 
     mean_eta1 = np.zeros(m)
     mean_eta2 = np.zeros(m)
     mean_sta = np.zeros(m)
-
+    
     for i in range(m):
         args = np.where(eta1_err[:,i]!=0)
         eta1_tmp = eta1_err[:,i][args]
         eta2_tmp = eta2_err[:,i][args]
         sta_tmp = sta_err[:,i][args]
-        length = int(len(eta1_tmp)*percent)
-        eta1_use = np.sort(eta1_tmp)[:length]
-        eta2_use = np.sort(eta2_tmp)[:length]
-        sta_use = np.sort(sta_tmp)[:length]
-        mean_eta1[i] = np.sum(eta1_use)/length
-        mean_eta2[i] = np.sum(eta2_use)/length
-        mean_sta[i] = np.sum(sta_use)/length   
+        k = len(eta1_tmp)
+        if k == 0:
+            mean_eta1[i] = mean_eta1[i-1]
+            mean_eta2[i] = mean_eta2[i-1]
+            mean_sta[i] = mean_sta[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            eta1_use = np.sort(eta1_tmp)[:length]
+            eta2_use = np.sort(eta2_tmp)[:length]
+            sta_use = np.sort(sta_tmp)[:length]
+            mean_eta1[i] = np.sum(eta1_use)/length
+            mean_eta2[i] = np.sum(eta2_use)/length
+            mean_sta[i] = np.sum(sta_use)/length   
     
     return mean_eta1, mean_eta2, mean_sta
+
+
 
 
 def absolute_difference_eta1(df, percent):
@@ -206,16 +215,21 @@ def absolute_difference_eta1(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+        place = m -1 -hba
+        eta1_err[i, place] = np.abs(ata[i]-eta1[i]).total_seconds()
 
     mean_eta1 = np.zeros(m)
 
     for i in range(m):
         args = np.where(eta1_err[:,i]!=0)
         eta1_tmp = eta1_err[:,i][args]
-        length = int(len(eta1_tmp)*percent)
-        eta1_use = np.sort(eta1_tmp)[:length]
-        mean_eta1[i] = np.sum(eta1_use)/length
+        k = len(eta1_tmp)
+        if k == 0:
+            mean_eta1[i] = mean_eta1[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            eta1_use = np.sort(eta1_tmp)[:length]
+            mean_eta1[i] = np.sum(eta1_use)/length
     
     return mean_eta1
 
@@ -248,16 +262,21 @@ def absolute_difference_eta2(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+        place = m-1-hba
+        eta2_err[i, place] = np.abs(ata[i]-eta2[i]).total_seconds()
 
     mean_eta2 = np.zeros(m)
 
     for i in range(m):
         args = np.where(eta2_err[:,i]!=0)
         eta2_tmp = eta2_err[:,i][args]
-        length = int(len(eta2_tmp)*percent)
-        eta2_use = np.sort(eta2_tmp)[:length]
-        mean_eta2[i] = np.sum(eta2_use)/length  
+        k = len(eta2_tmp)
+        if k == 0:
+            mean_eta2[i]= mean_eta2[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            eta2_use = np.sort(eta2_tmp)[:length]
+            mean_eta2[i] = np.sum(eta2_use)/length  
     
     return mean_eta2
 
@@ -290,18 +309,75 @@ def absolute_difference_sta(df, percent):
 
     for i in range(n):
         hba = int(df["hours_bef_arr"][i])
-        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+        place = m-1-hba
+        sta_err[i, place] = np.abs(ata[i]-sta[i]).total_seconds()
 
     mean_sta = np.zeros(m)
 
     for i in range(m):
         args = np.where(sta_err[:,i]!=0)
         sta_tmp = sta_err[:,i][args]
-        length = int(len(sta_tmp)*percent)
-        sta_use = np.sort(sta_tmp)[:length]
-        mean_sta[i] = np.sum(sta_use)/length   
+        k = len(sta_tmp)
+        if k == 0:
+            mean_sta[i]=mean_sta[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            sta_use = np.sort(sta_tmp)[:length]
+            mean_sta[i] = np.sum(sta_use)/length   
     
     return mean_sta
+
+
+def absolute_difference_nextport(df, percent):
+    """
+    Calculates the absolute difference in time of arrivial per hour
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        Dataframe containing the cleaned shipdata.
+        
+    percent: float
+        percentage of data to be used
+    Returns
+    -------
+    mean_sta : ndarray
+        array containing the mean difference per hour for each city
+        for the nextport.
+
+    """
+    
+    nextport = df['nextport_eta'].to_numpy().astype(str)
+    nan_nextport = nextport != 'nan'
+    df_small = df[nan_nextport]
+    df_small = df_small.reset_index(drop = True)
+    
+    n = len(df_small)
+    hours = df_small.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    nport_err = np.zeros((n,m))
+    ata = df_small["ata"].astype('datetime64[s]')
+    nport = df_small["nextport_eta"].astype('datetime64[s]')
+
+    for i in range(n):
+        hba = int(df_small["hours_bef_arr"][i])
+        place = m - 1 - hba
+        nport_err[i, place] = np.abs(ata[i]-nport[i]).total_seconds()
+
+    mean_nport = np.zeros(m)
+
+    for i in range(m):
+        args = np.where(nport_err[:,i]!=0)
+        nport_tmp = nport_err[:,i][args]
+        k = len(nport_tmp)
+        if k==0:
+            mean_nport[i] = mean_nport[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            nport_use = np.sort(nport_tmp)[:length]
+            mean_nport[i] = np.sum(nport_use)/length   
+    
+    return mean_nport
 
 
 def provider_performance(df, provider):
@@ -524,6 +600,7 @@ if __name__ == "__main__":
     file = "eta2_dump.csv"
     df = get_data_cleaned_eta2(file)
     #percent = 0.9
+    #nport = absolute_difference_nextport(df, percent)
     #mean1, mean2, means = absolute_difference(df, percent)
     # providers =  df.schedule_source.unique().tolist()
     # sm_mean_eta1, sm_mean_eta2, sm_mean_sta = provider_performance(df, "scraper_maersk")
