@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import eta2_module as eta
 import numpy as np
 
+
 file = "eta2_dump.csv"
 df = eta.get_data_cleaned_eta2(file)
 percent = 0.9
