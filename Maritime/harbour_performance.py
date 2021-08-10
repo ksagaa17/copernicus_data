@@ -8,16 +8,18 @@ import numpy as np
 import pandas as pd
 
 
-df = eta.get_data_cleaned_eta2()
+file = "eta2_dump"
+df = eta.get_data_cleaned_eta2(file)
 ports =  df.port.unique().tolist()
 n = len(ports)
 
+percent = 0.95
 eta1s = np.zeros(n)
 eta2s = np.zeros(n)
 stas = np.zeros(n)
 
 for i in range(n):
-     eta1_tmp, eta2_tmp, sta_tmp = eta.port_performance(df, ports[i])
+     eta1_tmp, eta2_tmp, sta_tmp = eta.port_performance(df, ports[i], percent)
      eta1s[i] = np.mean(eta1_tmp)
      eta2s[i] = np.mean(eta2_tmp)
      stas[i] = np.mean(sta_tmp)
@@ -37,7 +39,7 @@ ports_counted = df['port'].value_counts()
 index = ports_counted.index[:10]
 
 for i in range(len(index)):
-    eta1, eta2, sta = eta.port_performance(df, index[i])
+    eta1, eta2, sta = eta.port_performance(df, index[i], percent)
     n = len(eta1)
     eta.attribute_plot(eta1, eta2, sta, index[i], n)
 

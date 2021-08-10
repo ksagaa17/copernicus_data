@@ -9,7 +9,7 @@ import eta2_module as eta
 import numpy as np
 
 
-file = "eta2_dump.csv"
+file = "eta2_dump"
 df = eta.get_data_cleaned_eta2(file)
 percent = 0.9
 mean_sta = eta.absolute_difference_sta(df, percent)
@@ -17,10 +17,7 @@ mean_eta1 = eta.absolute_difference_eta1(df, percent)
 mean_eta2 = eta.absolute_difference_eta2(df, percent)
 mean_nport = eta.absolute_difference_nextport(df, percent)
 
-
 divider = 60*60
-
-
 
 final_mean_eta1 = np.mean(mean_eta1)/divider
 final_mean_eat2 = np.mean(mean_eta2)/divider

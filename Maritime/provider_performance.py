@@ -8,8 +8,11 @@ import numpy as np
 import eta2_module as eta
 
 
-df = eta.get_data_cleaned_eta2()
+file = "eta2_dump"
+df = eta.get_data_cleaned_eta2(file)
+df_small = eta.nextport_dataframe(file)
 providers =  df.schedule_source.unique().tolist()
+percent = 0.95
 
 m = len(providers)
 
@@ -18,7 +21,7 @@ eta2s = np.zeros(m)
 stas = np.zeros(m)
 
 for i in range(m):
-    eta1_tmp, eta2_tmp, sta_tmp = eta.provider_performance(df, providers[i])
+    eta1_tmp, eta2_tmp, sta_tmp = eta.provider_performance(df, percent, providers[i])
     eta1s[i] = np.mean(eta1_tmp)
     eta2s[i] = np.mean(eta2_tmp)
     stas[i] = np.mean(sta_tmp) 
