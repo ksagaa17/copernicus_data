@@ -8,7 +8,6 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-import datetime as dt
 
 
 def get_data_eta2(filename):
@@ -72,7 +71,7 @@ def get_data_cleaned_eta2(filename):
        print('Pickle loaded')
     
     except FileNotFoundError:
-        print('No dataframe pickle found. Pickling dataframe. This takes a while so grab a cup of coffe') 
+        print('No dataframe pickle found. Pickling dataframe.') 
         df = pd.read_csv('data/{0}.csv'.format(filename))
         # Adding hours before arrival
         
@@ -152,11 +151,11 @@ def nextport_dataframe(filename):
 
     try:
        with open('data/{0}_dataframe_cleaned_nextport.pickle'.format(filename), 'rb') as file:
-           df = pickle.load(file)
+           df_small = pickle.load(file)
        print('Pickle loaded')
     
     except FileNotFoundError:
-        print('No dataframe pickle found. Pickling dataframe. This takes a while so grab a cup of coffe') 
+        print('No dataframe pickle found. Pickling dataframe.') 
         df = pd.read_csv('data/{0}.csv'.format(filename))
     
         nextport = df['nextport_eta'].to_numpy().astype(str)
@@ -388,13 +387,13 @@ def absolute_difference_sta(df, percent):
     return mean_sta
 
 
-def absolute_difference_nextport(df, percent):
+def absolute_difference_nextport(df_small, percent):
     """
     Calculates the absolute difference in time of arrivial per hour
 
     Parameters
     ----------
-    df : Pandas dataframe
+    df_small : Pandas dataframe
         Dataframe containing the cleaned shipdata (use nextport dataframe).
         
     percent: float
@@ -408,14 +407,14 @@ def absolute_difference_nextport(df, percent):
     """
     
     n = len(df_small)
-    hours = df_small.hours_bef_arr.unique().tolist()
+    hours = df_small.hours_bef_arr_nport.unique().tolist()
     m = int(np.max(hours))+1
     nport_err = np.zeros((n,m))
     ata = df_small["ata"].astype('datetime64[s]')
     nport = df_small["nextport_eta"].astype('datetime64[s]')
 
     for i in range(n):
-        hba = int(df_small["hours_bef_arr_"][i])
+        hba = int(df_small["hours_bef_arr_nport"][i])
         #place = m - 1 - hba
         nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
 
@@ -464,56 +463,59 @@ def provider_performance(df, provider, percent):
     df_small = df.loc[df["schedule_source"]== provider]
     df_small = df_small.reset_index(drop = True)
     n = len(df_small)
-    hours = df_small.hours_bef_arr.unique().tolist()
-    m = int(np.max(hours))+1
-    eta1_err = np.zeros((n,m))
-    sta_err = np.zeros((n,m))
-    eta2_err = np.zeros((n,m))
-    ata = df_small["ata"].astype('datetime64[s]')
-    sta = df_small["sta"].astype('datetime64[s]')
-    eta1 = df_small["eta1"].astype('datetime64[s]')
-    eta2 = df_small["eta2"].astype('datetime64[s]')
+    if n != 0 :
+        
+        hours = df_small.hours_bef_arr.unique().tolist()
+        m = int(np.max(hours))+1
+        eta1_err = np.zeros((n,m))
+        sta_err = np.zeros((n,m))
+        eta2_err = np.zeros((n,m))
+        ata = df_small["ata"].astype('datetime64[s]')
+        sta = df_small["sta"].astype('datetime64[s]')
+        eta1 = df_small["eta1"].astype('datetime64[s]')
+        eta2 = df_small["eta2"].astype('datetime64[s]')
 
-    for i in range(n):
-        hba = int(df["hours_bef_arr"][i])
+        for i in range(n):
+            hba = int(df_small["hours_bef_arr"][i])
 #        place = m-1-hba
-        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
-        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
-        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+            eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+            eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+            sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
-    mean_eta1 = np.zeros(m)
-    mean_eta2 = np.zeros(m)
-    mean_sta = np.zeros(m)
-    
-    for i in range(m):
-        args = np.where(eta1_err[:,i]!=0)
-        eta1_tmp = eta1_err[:,i][args]
-        eta2_tmp = eta2_err[:,i][args]
-        sta_tmp = sta_err[:,i][args]
-        k = len(eta1_tmp)
-        if k == 0:
-            mean_eta1[i] = mean_eta1[i-1]
-            mean_eta2[i] = mean_eta2[i-1]
-            mean_sta[i] = mean_sta[i-1]
-        else:
-            length = int(np.ceil(k*percent))
-            eta1_use = np.sort(eta1_tmp)[:length]
-            eta2_use = np.sort(eta2_tmp)[:length]
-            sta_use = np.sort(sta_tmp)[:length]
-            mean_eta1[i] = np.sum(eta1_use)/length
-            mean_eta2[i] = np.sum(eta2_use)/length
-            mean_sta[i] = np.sum(sta_use)/length
-    return mean_eta1, mean_eta2, mean_sta
+        mean_eta1 = np.zeros(m)
+        mean_eta2 = np.zeros(m)
+        mean_sta = np.zeros(m)
+        
+        for i in range(m):
+            args = np.where(eta1_err[:,i]!=0)
+            eta1_tmp = eta1_err[:,i][args]
+            eta2_tmp = eta2_err[:,i][args]
+            sta_tmp = sta_err[:,i][args]
+            k = len(eta1_tmp)
+            if k == 0:
+                mean_eta1[i] = mean_eta1[i-1]
+                mean_eta2[i] = mean_eta2[i-1]
+                mean_sta[i] = mean_sta[i-1]
+            else:
+                length = int(np.ceil(k*percent))
+                eta1_use = np.sort(eta1_tmp)[:length]
+                eta2_use = np.sort(eta2_tmp)[:length]
+                sta_use = np.sort(sta_tmp)[:length]
+                mean_eta1[i] = np.sum(eta1_use)/length
+                mean_eta2[i] = np.sum(eta2_use)/length
+                mean_sta[i] = np.sum(sta_use)/length
+        return mean_eta1, mean_eta2, mean_sta
+    else:
+        return False, False, False
 
-
-def provider_performance_nextport(df, provider, percent):
+def provider_performance_nextport(df_small, provider, percent):
     """
     Calculates the absolute difference in time of arrival per hour for a
     provider 
     
     Parameters
     ----------
-    df : Pandas dataframe
+    df_small : Pandas dataframe
         dataframe containing the shipdata (use nextport dataframe).
     provider : string
         string of a providername.
@@ -528,34 +530,36 @@ def provider_performance_nextport(df, provider, percent):
 
     """
     
-    df_smaller = df.loc[df_small["schedule_source"]== provider]
+    df_smaller = df_small.loc[df_small["schedule_source"]== provider]
     df_smaller = df_smaller.reset_index(drop = True)
     n = len(df_smaller)
-    hours = df_smaller.hours_bef_arr.unique().tolist()
-    m = int(np.max(hours))+1
-    nport_err = np.zeros((n,m))
-    ata = df_smaller["ata"].astype('datetime64[s]')
-    nport = df_smaller["nextport_eta"].astype('datetime64[s]')
+    if n !=0:
+        hours = df_smaller.hours_bef_arr_nport.unique().tolist()
+        m = int(np.max(hours))+1
+        nport_err = np.zeros((n,m))
+        ata = df_smaller["ata"].astype('datetime64[s]')
+        nport = df_smaller["nextport_eta"].astype('datetime64[s]')
 
-    for i in range(n):
-        hba = int(df["hours_bef_arr"][i])
-#        place = m-1-hba
-        nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
+        for i in range(n):
+            hba = int(df_smaller["hours_bef_arr_nport"][i])
+   #        place = m-1-hba
+            nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
         
-    mean_sta = np.zeros(m)
+        mean_nport = np.zeros(m)
     
-    for i in range(m):
-        args = np.where(nport_err[:,i]!=0)
-        nport_tmp = nport_err[:,i][args]
-        k = len(nport_tmp)
-        if k == 0:
-            mean_nport[i] = mean_nport[i-1]
-        else:
-            length = int(np.ceil(k*percent))
-            nport_use = np.sort(nport_tmp)[:length]
-            mean_nport[i] = np.sum(nport_use)/length
-    return mean_nport
-    
+        for i in range(m):
+            args = np.where(nport_err[:,i]!=0)
+            nport_tmp = nport_err[:,i][args]
+            k = len(nport_tmp)
+            if k == 0:
+                mean_nport[i] = mean_nport[i-1]
+            else:
+                length = int(np.ceil(k*percent))
+                nport_use = np.sort(nport_tmp)[:length]
+                mean_nport[i] = np.sum(nport_use)/length
+        return mean_nport
+    else:
+       return False
 
 def port_performance(df, port, percent):
     """
@@ -626,7 +630,7 @@ def port_performance(df, port, percent):
     return mean_eta1, mean_eta2, mean_sta
 
 
-def port_performance_nextport(df, port, percent):
+def port_performance_nextport(df_small, port, percent):
     """
     Calculates the absolute difference in time of arrival per hour for a
     provider 
@@ -648,34 +652,37 @@ def port_performance_nextport(df, port, percent):
 
     """
     
-    df_smaller = df.loc[df_small["port"]== port]
+    df_smaller = df_small.loc[df_small["port"]== port]
     df_smaller = df_smaller.reset_index(drop = True)
     n = len(df_smaller)
-    hours = df_smaller.hours_bef_arr.unique().tolist()
-    m = int(np.max(hours))+1
-    nport_err = np.zeros((n,m))
-    ata = df_smaller["ata"].astype('datetime64[s]')
-    nport = df_smaller["nextport_eta"].astype('datetime64[s]')
-    mean_nport = np.zeros(m)
+    if n != 0:
+        hours = df_smaller.hours_bef_arr_nport.unique().tolist()
+        m = int(np.max(hours))+1
+        nport_err = np.zeros((n,m))
+        ata = df_smaller["ata"].astype('datetime64[s]')
+        nport = df_smaller["nextport_eta"].astype('datetime64[s]')
+        mean_nport = np.zeros(m)
 
-    for i in range(n):
-        hba = int(df_smaller["hours_bef_arr"][i])
-        nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
+        for i in range(n):
+            hba = int(df_smaller["hours_bef_arr_nport"][i])
+            nport_err[i, hba] = np.abs(ata[i]-nport[i]).total_seconds()
 
-    for i in range(m):
-        args = np.where(nport_err[:,i]!=0)
-        nport_tmp = nport_err[:,i][args]
-        k = len(nport_tmp)
-        if k == 0:
-            mean_nport[i] = mean_nport[i-1]
-        else:
-            length = int(np.ceil(k*percent))
-            nport_use = np.sort(nport_tmp)[:length]
-            mean_nport[i] = np.sum(nport_use)/length
-    return mean_nport
+        for i in range(m):
+            args = np.where(nport_err[:,i]!=0)
+            nport_tmp = nport_err[:,i][args]
+            k = len(nport_tmp)
+            if k == 0:
+                mean_nport[i] = mean_nport[i-1]
+            else:
+                length = int(np.ceil(k*percent))
+                nport_use = np.sort(nport_tmp)[:length]
+                mean_nport[i] = np.sum(nport_use)/length
+        return mean_nport
+    else:
+        return False
 
 
-def attribute_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
+def attribute_plot(mean_eta1, mean_eta2, mean_schedule, mean_nport, plttitle, zoom, zoom2):
     """
     makes a plot showcasing the performance of a given attribute
     
@@ -699,18 +706,22 @@ def attribute_plot(mean_eta1, mean_eta2, mean_schedule, plttitle, zoom):
     """
     
     n = len(mean_eta1)
+    m = len(mean_nport)
     plt.style.use('seaborn-darkgrid')
     fig, ax = plt.subplots()
     xticks = np.linspace(1,n,n)
-    ax.plot(xticks, mean_eta1/(60*60))
-    ax.plot(xticks, mean_eta2/(60*60))
-    ax.plot(xticks, mean_schedule/(60*60))
+    xticks2 = np.linspace(1,m,m)
+    divider = 60*60
+    ax.plot(xticks[:zoom], mean_eta1[:zoom]/(divider))
+    ax.plot(xticks[:zoom], mean_eta2[:zoom]/(divider))
+    ax.plot(xticks[:zoom], mean_schedule[:zoom]/(divider))
+    ax.plot(xticks2[:zoom2], mean_nport[:zoom2]/(divider))
     ax.invert_xaxis()
     ax.set_ylabel("Absolute error in hours")
     ax.set_xlabel('Hours before arrival')
-    plt.legend(["eta1","eta2", "schedule"])
+    plt.legend(["eta1","eta2", "schedule", "nextport"])
     plt.title("{0}".format(plttitle))
-    plt.savefig("figures/{0}_{1}.pdf".format(plttitle, zoom))
+    plt.savefig("figures/{0}_{1}_{2}.pdf".format(plttitle, zoom, zoom2))
     plt.show()
 
 

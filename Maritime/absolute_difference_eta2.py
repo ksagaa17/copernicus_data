@@ -11,11 +11,12 @@ import numpy as np
 
 file = "eta2_dump"
 df = eta.get_data_cleaned_eta2(file)
+df_small = eta.nextport_dataframe(file)
 percent = 0.9
 mean_sta = eta.absolute_difference_sta(df, percent)
 mean_eta1 = eta.absolute_difference_eta1(df, percent)
 mean_eta2 = eta.absolute_difference_eta2(df, percent)
-mean_nport = eta.absolute_difference_nextport(df, percent)
+mean_nport = eta.absolute_difference_nextport(df_small, percent)
 
 divider = 60*60
 
@@ -25,7 +26,6 @@ final_mean_sta = np.mean(mean_sta)/divider
 final_mean_nport = np.mean(mean_nport)/divider
 
 #%% plotting
-
 n = len(mean_eta1)
 zoom = 200 #n 
 
