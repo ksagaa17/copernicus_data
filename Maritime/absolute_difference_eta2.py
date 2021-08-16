@@ -27,10 +27,10 @@ final_mean_nport = np.mean(mean_nport)/divider
 
 #%% plotting
 n = len(mean_eta1)
-zoom = 200 #n 
+zoom = n 
 
 m = len(mean_nport)
-zoom2 = 200 #m
+zoom2 = m
 
 plt.style.use('seaborn-darkgrid')
 fig, ax = plt.subplots()
@@ -44,6 +44,7 @@ ax.plot(xticks2[:zoom2], mean_nport[:zoom2]/divider)
 ax.invert_xaxis()
 ax.set_ylabel("Absolute error in hours")
 ax.set_xlabel('Hours before arrival')
+plt.title("Absolute Error (90% of the data at each hour is used)")
 plt.legend(["eta1","eta2", "schedule", "nextport"])
-plt.savefig("figures/Absolute_difference_eta2_{0}.pdf".format(zoom))
+plt.savefig("figures/Absolute_difference_{0}_hours.png".format(zoom))
 plt.show()

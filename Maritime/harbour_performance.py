@@ -14,11 +14,12 @@ df_small = eta.nextport_dataframe(file)
 ports =  df.port.unique().tolist()
 n = len(ports)
 
-percent = 0.95
+percent = 0.90
 eta1s = np.zeros(n)
 eta2s = np.zeros(n)
 stas = np.zeros(n)
 nports = np.zeros(n)
+#points = np.zeros(n)
 
 for i in range(n):
      eta1_tmp, eta2_tmp, sta_tmp = eta.port_performance(df, ports[i], percent)
@@ -28,6 +29,8 @@ for i in range(n):
      stas[i] = np.mean(sta_tmp)
      #if nport_tmp != False:
      nports[i] = np.mean(nport_tmp)
+     # if type(eta1_tmp) != int:
+     #     points[i] = len(eta1_tmp)
 
 divider = 60*60
 row = np.linspace(1,n,n)
@@ -39,7 +42,7 @@ nan_eta2 = eta2 != 'nan'
 portdata = portdata[nan_eta2]
 portdata = portdata.reset_index(drop = True)
 
-#%% plots
+#%% Plots
 ports_counted = df['port'].value_counts()
 index = ports_counted.index[:10]
 
@@ -48,8 +51,7 @@ for i in range(len(index)):
     nport = eta.port_performance_nextport(df_small, index[i], percent)
     n = len(eta1)
     m = len(nport)
-    eta.attribute_plot(eta1, eta2, sta, nport, index[i], n, m)
-
+    eta.attribute_plot(eta1, eta2, sta, nport, index[i], 250, 250)
 
 # df_CLSAI = df.loc[df["port"]== "CLSAI"]
 # df_OMSOH = df.loc[df["port"]== "OMSOH"]

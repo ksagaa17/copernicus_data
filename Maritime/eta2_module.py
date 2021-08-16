@@ -463,50 +463,48 @@ def provider_performance(df, provider, percent):
     df_small = df.loc[df["schedule_source"]== provider]
     df_small = df_small.reset_index(drop = True)
     n = len(df_small)
-    if n != 0 :
         
-        hours = df_small.hours_bef_arr.unique().tolist()
-        m = int(np.max(hours))+1
-        eta1_err = np.zeros((n,m))
-        sta_err = np.zeros((n,m))
-        eta2_err = np.zeros((n,m))
-        ata = df_small["ata"].astype('datetime64[s]')
-        sta = df_small["sta"].astype('datetime64[s]')
-        eta1 = df_small["eta1"].astype('datetime64[s]')
-        eta2 = df_small["eta2"].astype('datetime64[s]')
+    hours = df_small.hours_bef_arr.unique().tolist()
+    m = int(np.max(hours))+1
+    eta1_err = np.zeros((n,m))
+    sta_err = np.zeros((n,m))
+    eta2_err = np.zeros((n,m))
+    ata = df_small["ata"].astype('datetime64[s]')
+    sta = df_small["sta"].astype('datetime64[s]')
+    eta1 = df_small["eta1"].astype('datetime64[s]')
+    eta2 = df_small["eta2"].astype('datetime64[s]')
 
-        for i in range(n):
-            hba = int(df_small["hours_bef_arr"][i])
+    for i in range(n):
+        hba = int(df_small["hours_bef_arr"][i])
 #        place = m-1-hba
-            eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
-            eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
-            sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
+        eta1_err[i, hba] = np.abs(ata[i]-eta1[i]).total_seconds()
+        eta2_err[i, hba] = np.abs(ata[i]-eta2[i]).total_seconds()
+        sta_err[i, hba] = np.abs(ata[i]-sta[i]).total_seconds()
 
-        mean_eta1 = np.zeros(m)
-        mean_eta2 = np.zeros(m)
-        mean_sta = np.zeros(m)
+    mean_eta1 = np.zeros(m)
+    mean_eta2 = np.zeros(m)
+    mean_sta = np.zeros(m)
         
-        for i in range(m):
-            args = np.where(eta1_err[:,i]!=0)
-            eta1_tmp = eta1_err[:,i][args]
-            eta2_tmp = eta2_err[:,i][args]
-            sta_tmp = sta_err[:,i][args]
-            k = len(eta1_tmp)
-            if k == 0:
-                mean_eta1[i] = mean_eta1[i-1]
-                mean_eta2[i] = mean_eta2[i-1]
-                mean_sta[i] = mean_sta[i-1]
-            else:
-                length = int(np.ceil(k*percent))
-                eta1_use = np.sort(eta1_tmp)[:length]
-                eta2_use = np.sort(eta2_tmp)[:length]
-                sta_use = np.sort(sta_tmp)[:length]
-                mean_eta1[i] = np.sum(eta1_use)/length
-                mean_eta2[i] = np.sum(eta2_use)/length
-                mean_sta[i] = np.sum(sta_use)/length
-        return mean_eta1, mean_eta2, mean_sta
-    else:
-        return False, False, False
+    for i in range(m):
+        args = np.where(eta1_err[:,i]!=0)
+        eta1_tmp = eta1_err[:,i][args]
+        eta2_tmp = eta2_err[:,i][args]
+        sta_tmp = sta_err[:,i][args]
+        k = len(eta1_tmp)
+        if k == 0:
+            mean_eta1[i] = mean_eta1[i-1]
+            mean_eta2[i] = mean_eta2[i-1]
+            mean_sta[i] = mean_sta[i-1]
+        else:
+            length = int(np.ceil(k*percent))
+            eta1_use = np.sort(eta1_tmp)[:length]
+            eta2_use = np.sort(eta2_tmp)[:length]
+            sta_use = np.sort(sta_tmp)[:length]
+            mean_eta1[i] = np.sum(eta1_use)/length
+            mean_eta2[i] = np.sum(eta2_use)/length
+            mean_sta[i] = np.sum(sta_use)/length
+    return mean_eta1, mean_eta2, mean_sta
+    
 
 def provider_performance_nextport(df_small, provider, percent):
     """
@@ -559,7 +557,7 @@ def provider_performance_nextport(df_small, provider, percent):
                 mean_nport[i] = np.sum(nport_use)/length
         return mean_nport
     else:
-       return False
+       return 0
 
 def port_performance(df, port, percent):
     """
@@ -679,7 +677,7 @@ def port_performance_nextport(df_small, port, percent):
                 mean_nport[i] = np.sum(nport_use)/length
         return mean_nport
     else:
-        return False
+        return 0
 
 
 def attribute_plot(mean_eta1, mean_eta2, mean_schedule, mean_nport, plttitle, zoom, zoom2):
@@ -720,8 +718,8 @@ def attribute_plot(mean_eta1, mean_eta2, mean_schedule, mean_nport, plttitle, zo
     ax.set_ylabel("Absolute error in hours")
     ax.set_xlabel('Hours before arrival')
     plt.legend(["eta1","eta2", "schedule", "nextport"])
-    plt.title("{0}".format(plttitle))
-    plt.savefig("figures/{0}_{1}_{2}.pdf".format(plttitle, zoom, zoom2))
+    plt.title("{0} - (90% of the data at each hour is used)".format(plttitle))
+    plt.savefig("figures/{0}_{1}_hours.png".format(plttitle, zoom))
     plt.show()
 
 
